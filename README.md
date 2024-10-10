@@ -3,17 +3,35 @@ libreDWG를 직접 PC에 설치해야 사용 가능합니다.
 1. [libreDWG다운로드](https://github.com/LibreDWG/libredwg)
 2. libreDWG설치
 ## libreDWG 설치방법
-windows에서는 cmd 환경에서 실행
-- 	 cmake필요  
 
-    git clone https://github.com/LibreDWG/libredwg.git
-    cd libredwg
-    mkdir build
-    cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-    cmake --build . --config Release
-    cmake --install .
+### OSX
+맥실리콘에서 사용하는 경우 rosetta로 터미널 이용하거나 VSCode 터미널에서을 열어야 정상적으로 동작
     
+    % umame -m
+    x86_64
+위처럼 출력되야함
+```
+brew install autoconf automake gcc make texinfo
+git clone https://github.com/LibreDWG/libredwg.git
+cd libredwg
+export ARCHFLAGS="-arch x86_64"
+./autogen.sh
+./configure
+make
+sudo make install
+```
+### windows
+windows에서는 cmd 환경에서 실행
+- cmake필요  
+```
+git clone https://github.com/LibreDWG/libredwg.git
+cd libredwg
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . --config Release
+cmake --install .
+```
 ### windows에서는 시스템 변수 설정필요
 설치된 라이브러리를 윈도우 시스템 PATH 설정
 설정 - 시스템 - 고급 시스템 설정 - 고급 탭 - 환경변수 - 시스템 변수 - PATH항목에 해당 라이브러리 경로 추가
@@ -51,12 +69,7 @@ filePath: dwg 파일 경로
 layerName: object를 추출할 레이어이름
 
 ### response
-    {
-      layer_name: string;
-      component: componentObject;
-    }[]
-
-#### componentObject
+모든 키값은 배열
 |Key|Desc|
 |-----|----|
 |arc|원형곡선|
@@ -74,7 +87,7 @@ layerName: object를 추출할 레이어이름
 |---|---|--|
 |center|number[]|중심좌표|
 |radius|number|반지름|
-|start_angle|number|시작각도|
+|start_angle|number|시작각도|
 |end_angle|number|종료각도|
 
 ### circle
@@ -96,17 +109,17 @@ layerName: object를 추출할 레이어이름
 
 |key|type|desc|
 |---|---|--|
-|base|number[]|중심좌표|
+|base|number[]|중심좌표|
 |rotation|number|회전값|
 |arc|arc?|원형곡선|
-|circle|circle?|원|
-|line|line?|선|
+|circle|circle?|원|
+|line|line?|선|
 |lwPolyline|lwPolyline?|물리선|
 
 ### line
 |key|type|desc|
 |---|---|--|
-|start|number[]|시작좌표|
+|start|number[]|시작좌표|
 |end|number[]|끝좌표|
 
 ### lwPolyline
@@ -117,10 +130,10 @@ layerName: object를 추출할 레이어이름
 ### solid
 |key|type|desc|
 |---|---|--|
-|corner1|number[]|점1|
-|corner2|number[]|점2|
-|corner3|number[]|점3|
-|corner4|number[]|점4|
+|corner1|number[]|점1|
+|corner2|number[]|점2|
+|corner3|number[]|점3|
+|corner4|number[]|점4|
 
 ### viewPosition
 화면 중앙 좌표값
