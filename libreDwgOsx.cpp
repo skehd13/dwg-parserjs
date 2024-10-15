@@ -1809,7 +1809,7 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
           parseBlock(object, jsonArr, env);
           break;
         case DWG_TYPE_INSERT:
-          parseEntityInsert(object, jsonArr, env);
+          // parseEntityInsert(object, jsonArr, env);
           break;
         case DWG_TYPE_MLINE:
           // parseEntityMLine(object, jsonArr, env);

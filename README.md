@@ -75,7 +75,6 @@ layerName: object를 추출할 레이어이름
 |arc|원형곡선|
 |circle|원|
 |ellipse|타원|
-|insert|블록참조|
 |line|선|
 |lwPolyline|물리선|
 |solid|솔리드|
@@ -105,16 +104,6 @@ layerName: object를 추출할 레이어이름
 |end_angle|number|종료각도|
 |sm_axis|number[]|각축별 반지름|
 
-### insert
-
-|key|type|desc|
-|---|---|--|
-|base|number[]|중심좌표|
-|rotation|number|회전값|
-|arc|arc?|원형곡선|
-|circle|circle?|원|
-|line|line?|선|
-|lwPolyline|lwPolyline?|물리선|
 
 ### line
 |key|type|desc|
