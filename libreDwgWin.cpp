@@ -13,45 +13,45 @@ std::string parseChar(unsigned char* text);
 std::string parseChar(unsigned char text);
 Napi::Object createObject(Napi::Env env);
 Napi::Array checkObject(Napi::Object jsonObj, std::string key);
-// ÇØÄ¡ ÆÄ½Ì
+// ï¿½ï¿½Ä¡ ï¿½Ä½ï¿½
 void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ¼Ö¸®µå ÆÄ½Ì
+// ï¿½Ö¸ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// Å¸¿øÆÄ½Ì
+// Å¸ï¿½ï¿½ï¿½Ä½ï¿½
 void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// MÅØ½ºÆ® ÆÄ½Ì
+// Mï¿½Ø½ï¿½Æ® ï¿½Ä½ï¿½
 // void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ÅØ½ºÆ® ÆÄ½Ì
+// ï¿½Ø½ï¿½Æ® ï¿½Ä½ï¿½
 // void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ÇØÄ¡ ÆÄ½Ì
+// ï¿½ï¿½Ä¡ ï¿½Ä½ï¿½
 void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// X¼± ÆÄ½Ì
+// Xï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ±¤¼± ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// Á¡ ÆÄ½Ì
+// ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ·¹ÀÌ¾Æ¿ô ÆÄ½Ì
+// ï¿½ï¿½ï¿½Ì¾Æ¿ï¿½ ï¿½Ä½ï¿½
 // void parseLayout(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ºí·Ï ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ºí·ÏÇì´õ ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Napi::Env env);
-// Insert ÆÄ½Ì
+// Insert ï¿½Ä½ï¿½
 void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ¼± ÆÄ½Ì
+// ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ¿ø ÆÄ½Ì
+// ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ¹°¸®¼± ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// Polyline2D ÆÄ½Ì
+// Polyline2D ï¿½Ä½ï¿½
 void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// Vertex2D ÆÄ½Ì
+// Vertex2D ï¿½Ä½ï¿½
 void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// Å¸¿ø(?) ÆÄ½Ì
+// Å¸ï¿½ï¿½(?) ï¿½Ä½ï¿½
 void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
-// ¸í·É(?) ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½(?) ï¿½Ä½ï¿½
 // void parseEntityAttdef(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // DIMENSION_LINEAR
 // void parseEntityDimensionLinear(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
@@ -66,31 +66,31 @@ Napi::Value ParseDWG(const Napi::CallbackInfo& info);
 
 bool contains(const std::vector<char*>& charArray, const char* target) {
   if (charArray.empty()) {
-        return true;  // ºñ¾î ÀÖÀ¸¸é false ¹ÝÈ¯
+        return true;  // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ false ï¿½ï¿½È¯
     }
-    // std::find_if¸¦ »ç¿ëÇÏ¿© target°ú °°Àº ¹®ÀÚ¿­À» Ã£½À´Ï´Ù.
+    // std::find_ifï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ targetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ï¿½Ï´ï¿½.
     auto it = std::find_if(charArray.begin(), charArray.end(), 
         [target](const char* str) {
-            return strcmp(str, target) == 0;  // ¹®ÀÚ¿­ ºñ±³
+            return strcmp(str, target) == 0;  // ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½
         });
 
-    return it != charArray.end();  // Ã£À¸¸é true, ¾Æ´Ï¸é false
+    return it != charArray.end();  // Ã£ï¿½ï¿½ï¿½ï¿½ true, ï¿½Æ´Ï¸ï¿½ false
 }
 
 void clearCharArray() {
     for (char* str : charArray) {
-        delete[] str; // °¢ Æ÷ÀÎÅÍ·Î ÇÒ´çµÈ ¸Þ¸ð¸® ÇØÁ¦
+        delete[] str; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ ï¿½Ò´ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
-    charArray.clear(); // º¤ÅÍ ºñ¿ì±â (¼±ÅÃ »çÇ×)
+    charArray.clear(); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 }
 
 bool contains(char* arr[], int length, const char* target) {
     for (int i = 0; i < length; ++i) {
         if (strcmp(arr[i], target) == 0) {
-            return true;  // Ã£À¸¸é true ¹ÝÈ¯
+            return true;  // Ã£ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½È¯
         }
     }
-    return false;  // Ã£Áö ¸øÇÏ¸é false ¹ÝÈ¯
+    return false;  // Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ false ï¿½ï¿½È¯
 }
 
 std::string parseChar(char* text) {
@@ -796,7 +796,7 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("arc", arcArray);
 }
 
-// MÅØ½ºÆ®
+// Mï¿½Ø½ï¿½Æ®
 // void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   Dwg_Entity_MTEXT* mtext = object->tio.entity->tioMTEXT;
 //   Napi::Array mtextArray = checkObject(jsonObj, "mtext");
@@ -818,7 +818,7 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   jsonObj.Set("mtext", mtextArray);
 // }
 
-// ÅØ½ºÆ®
+// ï¿½Ø½ï¿½Æ®
 // void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   Dwg_Entity_TEXT* text = object->tio.entity->tioTEXT;
 //   Napi::Array textArray = checkObject(jsonObj, "text");
@@ -843,7 +843,7 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   jsonObj.Set("text", textArray);
 // }
 
-// °î¼±
+// ï¿½î¼±
 void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_SPLINE* spline = object->tio.entity->tio.SPLINE;
   char *layer_name = EntityLayerName(object);
@@ -864,7 +864,7 @@ void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
     point.Set(1, Napi::Number::New(env, fit_pts->y));
     point.Set(2, Napi::Number::New(env, fit_pts->z));
     points.Set(i, point);
-    fit_pts++; // Æ÷ÀÎÅÍ¸¦ ´ÙÀ½ ¿ä¼Ò·Î ÀÌµ¿
+    fit_pts++; // ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ò·ï¿½ ï¿½Ìµï¿½
   }
 
   splineObj.Set("points", points);
@@ -873,7 +873,7 @@ void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("spline", splineArray);
 }
 
-// X¼±
+// Xï¿½ï¿½
 void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_XLINE* xline = object->tio.entity->tio.XLINE;
   char *layer_name = EntityLayerName(object);
@@ -903,7 +903,7 @@ void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("xline", xlineArray);
 }
 
-// ±¤¼±
+// ï¿½ï¿½ï¿½ï¿½
 void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_RAY* ray = object->tio.entity->tio.RAY;
   char *layer_name = EntityLayerName(object);
@@ -933,7 +933,7 @@ void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("ray", rayArray);
 }
 
-//Á¡
+//ï¿½ï¿½
 void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_POINT* point = object->tio.entity->tio.POINT;
   char *layer_name = EntityLayerName(object);
@@ -1190,7 +1190,7 @@ void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("insert", insertArray);
 }
 
-// ¼±
+// ï¿½ï¿½
 void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_LINE* line = object->tio.entity->tio.LINE;
   char *layer_name = EntityLayerName(object);
@@ -1213,12 +1213,12 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   startArray.Set(1, Napi::Number::New(env, start.y));
   startArray.Set(2, Napi::Number::New(env, start.z));
 
-  // 'end' ¹è¿­¿¡ °ª ¼³Á¤
+  // 'end' ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   endArray.Set(zero, Napi::Number::New(env, end.x));
   endArray.Set(1, Napi::Number::New(env, end.y));
   endArray.Set(2, Napi::Number::New(env, end.z));
 
-  // 'lineObj' °´Ã¼¿¡ 'start'¿Í 'end' ¹è¿­À» ¼³Á¤
+  // 'lineObj' ï¿½ï¿½Ã¼ï¿½ï¿½ 'start'ï¿½ï¿½ 'end' ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   lineObj.Set("start", startArray);
   lineObj.Set("end", endArray);
   uint32_t length = lineArray.Length();
@@ -1231,7 +1231,7 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("line", newLineArray);
 }
 
-// ¿ø
+// ï¿½ï¿½
 void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_CIRCLE* circle = object->tio.entity->tio.CIRCLE;
   char *layer_name = EntityLayerName(object);
@@ -1259,7 +1259,7 @@ void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("circle", circleArray);
 }
 
-// ¹°¸®¼±
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_LWPOLYLINE* lwPolyline = object->tio.entity->tio.LWPOLYLINE;
   char *layer_name = EntityLayerName(object);
@@ -1283,7 +1283,7 @@ void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
     point.Set(1, Napi::Number::New(env, points->y));
     point.Set(2, Napi::Number::New(env, 0));
     pointArray.Set(i, point);
-    points++; // Æ÷ÀÎÅÍ¸¦ ´ÙÀ½ ¿ä¼Ò·Î ÀÌµ¿
+    points++; // ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ò·ï¿½ ï¿½Ìµï¿½
   }
   pointObj.Set("point", pointArray);
   // BITCODE_BL num_widths = lwPolyline->num_widths;
@@ -1422,7 +1422,7 @@ void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env)
   jsonObj.Set("vertex2D", vertex2DArray);
 }
 
-// Å¸¿ø(?) ÆÄ½Ì
+// Å¸ï¿½ï¿½(?) ï¿½Ä½ï¿½
 void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   Dwg_Entity_ELLIPSE* ellipse = object->tio.entity->tio.ELLIPSE;
   char *layer_name = EntityLayerName(object);
@@ -1477,7 +1477,7 @@ void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) 
   ellipseArray.Set(length, ellipseObject);
   jsonObj.Set("ellipse", ellipseArray);
 }
-// ¸í·É(?) ÆÄ½Ì
+// ï¿½ï¿½ï¿½ï¿½(?) ï¿½Ä½ï¿½
 // void parseEntityAttdef(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env)  {
 //   Dwg_Entity_ATTDEF* attdef = object->tio.entity->tioATTDEF;
 
@@ -1806,10 +1806,10 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
           // parseEntityLine(object, jsonArr, env);
           break;
         case DWG_TYPE_BLOCK:
-          parseBlock(object, jsonArr, env);
+          // parseBlock(object, jsonArr, env);
           break;
         case DWG_TYPE_INSERT:
-          parseEntityInsert(object, jsonArr, env);
+          // parseEntityInsert(object, jsonArr, env);
           break;
         case DWG_TYPE_MLINE:
           // parseEntityMLine(object, jsonArr, env);
@@ -1976,7 +1976,7 @@ std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env e
   return std::string("check end");
 }
 
-// DWG ÆÄÀÏÀ» ÆÄ½ÌÇÏ´Â C++ ÇÔ¼ö
+// DWG ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ï´ï¿½ C++ ï¿½Ô¼ï¿½
 Napi::Value ParseDWG(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   if (info.Length() < 1 || !info[0].IsString()) {
@@ -1999,20 +1999,20 @@ Napi::Value ParseDWG(const Napi::CallbackInfo& info) {
     Napi::Array inputArray = info[1].As<Napi::Array>();
     uint32_t length = inputArray.Length();
 
-    // ¹è¿­ ¿ä¼Ò¸¦ ¼øÈ¸ÇÏ¸ç º¯È¯
+    // ï¿½è¿­ ï¿½ï¿½Ò¸ï¿½ ï¿½ï¿½È¸ï¿½Ï¸ï¿½ ï¿½ï¿½È¯
     for (uint32_t i = 0; i < length; i++) {
         Napi::Value element = inputArray[i];
 
         if (element.IsString()) {
             Napi::String napiStr = element.As<Napi::String>();
-            std::string cppStr = napiStr.Utf8Value();  // C++ ¹®ÀÚ¿­·Î º¯È¯
+            std::string cppStr = napiStr.Utf8Value();  // C++ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 
-            // char*·Î º¯È¯
+            // char*ï¿½ï¿½ ï¿½ï¿½È¯
             char* charPtr = new char[cppStr.length() + 1]; // +1 for null terminator
             std::strcpy(charPtr, cppStr.c_str());
             charArray.push_back(charPtr);
         } else {
-            // ¹®ÀÚ¿­ÀÌ ¾Æ´Ñ °æ¿ì null Æ÷ÀÎÅÍ Ãß°¡
+            // ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ null ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
             charArray.push_back(nullptr);
         }
     }
@@ -2054,7 +2054,7 @@ Napi::Value ParseLayer(const Napi::CallbackInfo& info) {
   return jsonObj;
 }
 
-// Node.js¿Í ¿¬°áµÈ ³×ÀÌÆ¼ºê ¾Öµå¿Â Á¤ÀÇ
+// Node.jsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½Öµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "parseDWG"), Napi::Function::New(env, ParseDWG));
   exports.Set(Napi::String::New(env, "getLayer"), Napi::Function::New(env, ParseLayer));
