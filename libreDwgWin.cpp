@@ -850,7 +850,7 @@ void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-  Napi::Array splineArray = checkObject(jsonObj, "text", env);
+  Napi::Array textArray = checkObject(jsonObj, "text", env);
   
   Napi::Object textObj = Napi::Object::New(env);
   Napi::Array centerArray = Napi::Array::New(env, 3);
