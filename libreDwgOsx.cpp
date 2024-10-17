@@ -1857,7 +1857,7 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
           parseEntityText(object, jsonArr, env);
           break;
         case DWG_TYPE_MTEXT:
-          // parseEntityMText(object, jsonArr, env);
+          parseEntityMText(object, jsonArr, env);
           break;
         case DWG_TYPE_SPLINE:
           parseEntitySpline(object, jsonArr, env);

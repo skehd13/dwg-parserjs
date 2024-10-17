@@ -1,6 +1,6 @@
 {
   "name": "dwg-parserjs",
-  "version": "0.0.20-dev",
+  "version": "0.0.21-dev",
   "description": "",
   "main": "index.js",
   "browser": "index.js",
