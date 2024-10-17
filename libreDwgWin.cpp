@@ -863,7 +863,7 @@ void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   textObj.Set("rotation", rotation);
   textObj.Set("center", centerArray);
   textObj.Set("width", width);
-  textObj.Set("height", height);
+  textObj.Set("size", height);
   char* strText = EntityTextGetText(text);
   // std::cout << "DWG text->text: " << strText << std::endl;
   textObj.Set("text", Napi::String::New(env, strText));
