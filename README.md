@@ -78,6 +78,8 @@ layerName: object를 추출할 레이어이름
 |line|선|
 |lwPolyline|물리선|
 |solid|솔리드|
+|text|텍스트|
+|mtext|여러줄텍스트|
 |viewPosition|화면중심|
 
 ## 파싱타입
@@ -123,6 +125,23 @@ layerName: object를 추출할 레이어이름
 |corner2|number[]|점2|
 |corner3|number[]|점3|
 |corner4|number[]|점4|
+
+### text
+|key|type|desc|
+|---|---|--|
+|center|number[]|중심좌표|
+|rotation|number|회전값|
+|text|stirng|텍스트|
+|size|number|텍스트높이(사이즈)|
+
+### mtext
+|key|type|desc|
+|---|---|--|
+|center|number[]|중심좌표|
+|rotation|number|회전값|
+|text|stirng|텍스트|
+|size|number|텍스트높이(사이즈)|
+|width|number|가로크기|
 
 ### viewPosition
 화면 중앙 좌표값

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <dwg.h>
 #include <dwg_api.h>
+#include <math.h>
 #include <string>
 
 uint32_t zero = 0;
@@ -20,9 +21,9 @@ void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // 타원파싱
 void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // M텍스트 파싱
-// void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // 텍스트 파싱
-// void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // 해치 파싱
 void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // X선 파싱
@@ -61,6 +62,8 @@ std::string ExtractDWGData(Dwg_Data dwg, Napi::Array jsonArr, Napi::Env env);
 void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 std::string CheckObjectRef(Dwg_Data *restrict dwg, Napi::Array jsonArr, Napi::Env env);
 char* EntityLayerName(Dwg_Object* object);
+char* EntityTextGetText(Dwg_Entity_TEXT* ent_text);
+char * bit_convert_TU (const BITCODE_TU restrict wstr);
 std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env env);
 Napi::Value ParseDWG(const Napi::CallbackInfo& info);
 
@@ -797,51 +800,78 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // M텍스트
-// void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
-//   Dwg_Entity_MTEXT* mtext = object->tio.entity->tioMTEXT;
-//   Napi::Array mtextArray = checkObject(jsonObj, "mtext");
+void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+  Dwg_Entity_MTEXT* mtext = object->tio.entity->tio.MTEXT;
+  char *layer_name = EntityLayerName(object);
+   if(!contains(charArray, layer_name)) {
+    return;
+  }
+  Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
+  Napi::Array mtextArray = checkObject(jsonObj, "mtext", env);
   
-//   Napi::Object mtextObj = Napi::Object::New(env);
-//   Napi::Array centerArray = Napi::Array::New(env, 3);
-//   centerArray.Set(zero, Napi::Number::New(env, mtext->ins_pt.x));
-//   centerArray.Set(1, Napi::Number::New(env, mtext->ins_pt.y));
-//   centerArray.Set(2, Napi::Number::New(env, mtext->ins_pt.z));
+  Napi::Object mtextObj = Napi::Object::New(env);
+  Napi::Array centerArray = Napi::Array::New(env, 3);
+  centerArray.Set(zero, Napi::Number::New(env, mtext->ins_pt.x));
+  centerArray.Set(1, Napi::Number::New(env, mtext->ins_pt.y));
+  centerArray.Set(2, Napi::Number::New(env, mtext->ins_pt.z));
+  mtextObj.Set("center", centerArray);
+  // Napi::Array rotationArray = Napi::Array::New(env, 3);
+  // rotationArray.Set(zero, Napi::Number::New(env, mtext->x_axis_dir.x));
+  // rotationArray.Set(1, Napi::Number::New(env, mtext->x_axis_dir.y));
+  // rotationArray.Set(2, Napi::Number::New(env, mtext->x_axis_dir.z));
+  double rotation = atan2(mtext->x_axis_dir.y,mtext->x_axis_dir.x);
+  mtextObj.Set("rotation", rotation);
   
-//   mtextObj.Set("center", centerArray);
+  // BITCODE_BD rect_height = mtext->rect_height;
+  // BITCODE_BD rect_width = mtext->rect_width;
+  BITCODE_BD text_height = mtext->text_height;
+  BITCODE_BD extents_width = mtext->extents_width;
+  // BITCODE_BD extents_height = mtext->extents_height;
   
-//   char* text = mtext->text;
-//   std::string strText = parseChar(text);
-//   // std::cout << "DWG mtext->text: " << strText << std::endl;
-//   mtextObj.Set("text", Napi::String::New(env, strText));
-//   uint32_t length = mtextArray.Length();
-//   mtextArray.Set(length, mtextObj);
-//   jsonObj.Set("mtext", mtextArray);
-// }
+  char* text = bit_convert_TU((BITCODE_TU)mtext->text);
+  // std::cout << "DWG mtext->text: " << strText << std::endl;
+  mtextObj.Set("text", Napi::String::New(env, text));
+  // mtextObj.Set("rect_height", rect_height);
+  // mtextObj.Set("rect_width", rect_width);
+  mtextObj.Set("size", text_height);
+  mtextObj.Set("width", extents_width);
+  // mtextObj.Set("extents_height", extents_height);
+  uint32_t length = mtextArray.Length();
+  mtextArray.Set(length, mtextObj);
+  jsonObj.Set("mtext", mtextArray);
+}
 
 // 텍스트
-// void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
-//   Dwg_Entity_TEXT* text = object->tio.entity->tioTEXT;
-//   Napi::Array textArray = checkObject(jsonObj, "text");
+void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+  Dwg_Entity_TEXT* text = object->tio.entity->tio.TEXT;
+  char *layer_name = EntityLayerName(object);
   
-//   Napi::Object textObj = Napi::Object::New(env);
-//   Napi::Array centerArray = Napi::Array::New(env, 3);
-//   centerArray.Set(zero, Napi::Number::New(env, text->ins_pt.x));
-//   centerArray.Set(1, Napi::Number::New(env, text->ins_pt.y));
-//   centerArray.Set(2, Napi::Number::New(env, 0));
-//   BITCODE_RD rotation = text->rotation;
-//   textObj.Set("rotation", rotation);
-//   textObj.Set("center", centerArray);
-//   std::string strText = "";
-//   if(text->text_value != nullptr){
-//     std::cout << "DWG text->text: " << text->text_value << std::endl;
-//     std::string strText = parseChar(text->text_value);
-//   }
-//   // std::cout << "DWG text->text: " << strText << std::endl;
-//   textObj.Set("text", Napi::String::New(env, strText));
-//   uint32_t length = textArray.Length();
-//   textArray.Set(length, textObj);
-//   jsonObj.Set("text", textArray);
-// }
+  // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
+  if(!contains(charArray, layer_name)) {
+    return;
+  }
+  Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
+  Napi::Array textArray = checkObject(jsonObj, "text", env);
+  
+  Napi::Object textObj = Napi::Object::New(env);
+  Napi::Array centerArray = Napi::Array::New(env, 3);
+  centerArray.Set(zero, Napi::Number::New(env, text->ins_pt.x));
+  centerArray.Set(1, Napi::Number::New(env, text->ins_pt.y));
+  centerArray.Set(2, Napi::Number::New(env, 0));
+  BITCODE_RD rotation = text->rotation;
+  BITCODE_RD width = text->width_factor;
+  BITCODE_RD height = text->height;
+  textObj.Set("rotation", rotation);
+  textObj.Set("center", centerArray);
+  textObj.Set("width", width);
+  textObj.Set("height", height);
+  char* strText = EntityTextGetText(text);
+  // std::cout << "DWG text->text: " << strText << std::endl;
+  textObj.Set("text", Napi::String::New(env, strText));
+  uint32_t length = textArray.Length();
+  textArray.Set(length, textObj);
+  jsonObj.Set("text", textArray);
+}
 
 // 곡선
 void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
@@ -1824,7 +1854,7 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
           // parseEntityHELIX(object, jsonArr, env);
           break;
         case DWG_TYPE_TEXT:
-          // parseEntityText(object, jsonArr, env);
+          parseEntityText(object, jsonArr, env);
           break;
         case DWG_TYPE_MTEXT:
           // parseEntityMText(object, jsonArr, env);
@@ -1934,6 +1964,62 @@ char* EntityLayerName(Dwg_Object* object) {
     return name;
   }
   return name;
+}
+
+char* EntityTextGetText(Dwg_Entity_TEXT* ent_text) {
+  char *text;
+  text = bit_convert_TU((BITCODE_TU)ent_text->text_value);
+  return text;
+}
+
+char *
+bit_convert_TU (const BITCODE_TU restrict wstr)
+{
+  BITCODE_TU tmp = wstr;
+  char *str;
+  int i, len = 0;
+  uint16_t c = 0;
+
+  if (!wstr)
+    return NULL;
+  while ((c = *tmp++))
+    {
+      len++;
+      if (c >= 0x80)
+        {
+          len++;
+          if (c >= 0x800)
+            len++;
+        }
+    }
+  str = (char *)malloc (len + 1);
+  if (!str)
+    {
+      return NULL;
+    }
+  i = 0;
+  tmp = wstr;
+  while ((c = *tmp++) && i < len)
+    {
+      if (c < 0x80)
+        {
+          str[i++] = c & 0xFF;
+        }
+      else if (c < 0x800)
+        {
+          str[i++] = (c >> 6) | 0xC0;
+          str[i++] = (c & 0x3F) | 0x80;
+        }
+      else
+        {
+          str[i++] = (c >> 12) | 0xE0;
+          str[i++] = ((c >> 6) & 0x3F) | 0x80;
+          str[i++] = (c & 0x3F) | 0x80;
+        }
+    }
+  if (i <= len + 1)
+    str[i] = '\0';
+  return str;
 }
 
 std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env env) {
