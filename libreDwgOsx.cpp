@@ -15,43 +15,45 @@ std::string parseChar(unsigned char text);
 Napi::Object createObject(Napi::Env env);
 Napi::Array checkObject(Napi::Object jsonObj, std::string key);
 // 해치 파싱
-void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 솔리드 파싱
-void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 타원파싱
-void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // M텍스트 파싱
-void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 텍스트 파싱
-void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 해치 파싱
-void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // X선 파싱
-void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 광선 파싱
-void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 점 파싱
-void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 레이아웃 파싱
 // void parseLayout(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // 블록 파싱
-void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 블록헤더 파싱
-void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Napi::Env env);
+void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Napi::Env env, bool isCheckLayer);
 // Insert 파싱
-void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 선 파싱
-void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 원 파싱
-void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 물리선 파싱
-void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // Polyline2D 파싱
-void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // Vertex2D 파싱
-void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 타원(?) 파싱
-void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
+
+void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 // 명령(?) 파싱
 // void parseEntityAttdef(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // DIMENSION_LINEAR
@@ -59,7 +61,7 @@ void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 // SOLID
 // void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
 std::string ExtractDWGData(Dwg_Data dwg, Napi::Array jsonArr, Napi::Env env);
-void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env);
+void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 std::string CheckObjectRef(Dwg_Data *restrict dwg, Napi::Array jsonArr, Napi::Env env);
 char* EntityLayerName(Dwg_Object* object);
 char* EntityTextGetText(Dwg_Entity_TEXT* ent_text);
@@ -207,12 +209,12 @@ Napi::Object createObject(Napi::Env env) {
   return jsonObj;
 }
 
-void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_HATCH* hatch = object->tio.entity->tio.HATCH;
   char *layer_name = EntityLayerName(object);
   
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
@@ -486,7 +488,7 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   char *layer_name = EntityLayerName(object);
   
 //   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-//   if(!contains(charArray, layer_name)) {
+//   if(!contains(charArray, layer_name) && isCheckLayer) {
 //     return;
 //   }
 
@@ -730,11 +732,11 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 //   jsonObj.Set("hatch", hatchArray);
 // }
 
-void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_SOLID* solid = object->tio.entity->tio.SOLID;
   char *layer_name = EntityLayerName(object);
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   
@@ -772,12 +774,12 @@ void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("solid", solidArray);
 }
 
-void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_ARC* arc = object->tio.entity->tio.ARC;
   
   char *layer_name = EntityLayerName(object);
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   
@@ -800,10 +802,10 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // M텍스트
-void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_MTEXT* mtext = object->tio.entity->tio.MTEXT;
   char *layer_name = EntityLayerName(object);
-   if(!contains(charArray, layer_name)) {
+   if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
@@ -842,12 +844,12 @@ void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // 텍스트
-void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_TEXT* text = object->tio.entity->tio.TEXT;
   char *layer_name = EntityLayerName(object);
   
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
@@ -874,12 +876,12 @@ void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // 곡선
-void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_SPLINE* spline = object->tio.entity->tio.SPLINE;
   char *layer_name = EntityLayerName(object);
   
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
@@ -904,12 +906,12 @@ void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // X선
-void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_XLINE* xline = object->tio.entity->tio.XLINE;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -934,12 +936,12 @@ void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // 광선
-void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_RAY* ray = object->tio.entity->tio.RAY;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -964,12 +966,12 @@ void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 //점
-void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_POINT* point = object->tio.entity->tio.POINT;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1033,12 +1035,12 @@ void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 
 // }
 
-void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_BLOCK* block = object->tio.entity->tio.BLOCK;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
@@ -1059,13 +1061,31 @@ void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   jsonObj.Set("block", blockArray);
 }
 
-void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Napi::Env env) {
-  Dwg_Object_BLOCK_HEADER* blockHeader = object_object->tio.BLOCK_HEADER;
-  Napi::Array blockHeaderArray = checkObject(jsonObj, "blockHeader", env);
-  Napi::Object blockHeaderObject = Napi::Object::New(env);
+void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
+  Dwg_Object_BLOCK_HEADER* blockHeader = object->tio.object->tio.BLOCK_HEADER;
+  // char *layer_name = EntityLayerName(object);
+  // std::cout << "blockHeader->layer_name: " << layer_name << std::endl;  
+  // if(!contains(charArray, layer_name) && isCheckLayer) {
+  //   return;
+  // }
+  Napi::Object jsonObj = checkArray(jsonArr, (std::string)"blockHeader", env);
   std::string name = parseChar(blockHeader->name);
-  blockHeaderObject.Set("name", Napi::String::New(env, name));
+  char checkName = '*';
+  if(name[0] == checkName){
+    return;
+  }
+  // Napi::Array blockHeaderArray = checkObject(jsonObj, name, env);
+  Napi::Object blockHeaderObject = Napi::Object::New(env);
+  // blockHeaderObject.Set("name", Napi::String::New(env, name));
   // std::cout << "blockHeader->name: " << name << std::endl;
+  // std::cout << "blockHeader->used: " << blockHeader->used << std::endl;
+  // std::cout << "blockHeader->is_xref_ref: " << blockHeader->is_xref_ref << std::endl;
+  // std::cout << "blockHeader->is_xref_resolved: " << blockHeader->is_xref_resolved << std::endl;
+  // std::cout << "blockHeader->is_xref_dep: " << blockHeader->is_xref_dep << std::endl;
+  // std::cout << "blockHeader->insert_units: " << blockHeader->insert_units << std::endl;
+  // std::cout << "blockHeader->flag: " << static_cast<int>(blockHeader->flag) << std::endl;
+  blockHeaderObject.Set("flag", static_cast<int>(blockHeader->flag));
+  // std::cout << "blockHeader->flag2: " << blockHeader->flag2 << std::endl;
   // BITCODE_BL __iterator = blockHeader->__iterator;
   // // std::cout << "blockHeader->__iterator: " << __iterator << std::endl;
   // BITCODE_B anonymous = blockHeader->anonymous;
@@ -1086,12 +1106,12 @@ void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Na
   // // std::cout << ", " << base_pt.z << std::endl;
   // BITCODE_TV xref_pname = blockHeader->xref_pname;
   // std::string str_xref_pname = parseChar(xref_pname);
-  // // std::cout << "blockHeader->xref_pname: " << str_xref_pname << std::endl;
-  // BITCODE_RL num_inserts = blockHeader->num_inserts;
-  // // std::cout << "blockHeader->num_inserts: " << num_inserts << std::endl;
+  // std::cout << "blockHeader->xref_pname: " << str_xref_pname << std::endl;
+  BITCODE_RL num_inserts = blockHeader->num_inserts;
+  // std::cout << "blockHeader->num_inserts: " << num_inserts << std::endl;
   // BITCODE_TV description = blockHeader->description;
   // std::string str_description = parseChar(description);
-  // // std::cout << "blockHeader->description: " << str_description << std::endl;
+  // std::cout << "blockHeader->description: " << str_description << std::endl;
   // BITCODE_BL preview_size = blockHeader->preview_size;
   // // std::cout << "blockHeader->preview_size: " << preview_size << std::endl;
   // BITCODE_TF preview = blockHeader->preview;
@@ -1103,41 +1123,51 @@ void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Na
   // // std::cout << "blockHeader->explodable: " << explodable << std::endl;
   // BITCODE_RC block_scaling = blockHeader->block_scaling;
   // std::cout << "blockHeader->block_scaling: " << block_scaling << std::endl;
-  BITCODE_H block_entity = blockHeader->block_entity;
+  // BITCODE_H block_entity = blockHeader->block_entity;
   Napi::Array blockHeaderComponent = Napi::Array::New(env);
-  if(block_entity != nullptr){
-    // std::cout << "blockHeader->block_entity start"<< std::endl;
-    parseDWGObject(block_entity->obj, blockHeaderComponent, env);
-    // std::cout << "blockHeader->block_entity end"<< std::endl;
+  // if(block_entity != nullptr){
+  //   // std::cout << "blockHeader->block_entity start"<< std::endl;
+  //   parseDWGObject(block_entity->obj, blockHeaderComponent, env);
+  //   // std::cout << "blockHeader->block_entity end"<< std::endl;
+  // }
+  // BITCODE_H first_entity = blockHeader->first_entity;
+  // if(first_entity != nullptr){
+  //   // std::cout << "blockHeader->first_entity start"<< std::endl;
+  //   parseDWGObject(first_entity->obj, blockHeaderComponent, env);
+  //   // std::cout << "blockHeader->first_entity end"<< std::endl;
+  // }
+  // BITCODE_H last_entity = blockHeader->last_entity;
+  // if(last_entity != nullptr){
+  //   // std::cout << "blockHeader->last_entity start"<< std::endl;
+  //   parseDWGObject(last_entity->obj, blockHeaderComponent, env);
+  //   // std::cout << "blockHeader->last_entity end"<< std::endl;
+  // }
+  
+  if(static_cast<int>(blockHeader->flag) < 68){
+    BITCODE_H* entities = blockHeader->entities;
+    // std::cout << "blockHeader->entities start"<< std::endl;
+    // Napi::Array entitiesArray = Napi::Array::New(env);
+    for(BITCODE_BL i = 0; i < num_owned; i++) {
+      Dwg_Object* object = entities[i]->obj;
+      if(object != nullptr){
+        parseDWGObject(object, blockHeaderComponent, env, false);
+      }else{
+        // std::cout << "blockHeader->object is null:" << i << std::endl;
+      }
+    }
   }
-  BITCODE_H first_entity = blockHeader->first_entity;
-  if(first_entity != nullptr){
-    // std::cout << "blockHeader->first_entity start"<< std::endl;
-    parseDWGObject(first_entity->obj, blockHeaderComponent, env);
-    // std::cout << "blockHeader->first_entity end"<< std::endl;
-  }
-  BITCODE_H last_entity = blockHeader->last_entity;
-  if(last_entity != nullptr){
-    // std::cout << "blockHeader->last_entity start"<< std::endl;
-    parseDWGObject(last_entity->obj, blockHeaderComponent, env);
-    // std::cout << "blockHeader->last_entity end"<< std::endl;
-  }
-  BITCODE_H* entities = blockHeader->entities;
-  // std::cout << "blockHeader->entities start"<< std::endl;
-  for(BITCODE_BL i = 0; i < num_owned; i++) {
-    Dwg_Object* object = entities[i]->obj;
-    parseDWGObject(object, blockHeaderComponent, env);
-  }
-  // std::cout << "blockHeader->entities end"<< std::endl;
-  BITCODE_H endblk_entity = blockHeader->endblk_entity;
-  // std::cout << "blockHeader->endblk_entity start"<< std::endl;
-  parseDWGObject(endblk_entity->obj, blockHeaderComponent, env);
-  // std::cout << "blockHeader->endblk_entity end"<< std::endl;
+    
+  // blockHeaderObject.Set("entities", entitiesArray);
+  // // std::cout << "blockHeader->entities end"<< std::endl;
+  // BITCODE_H endblk_entity = blockHeader->endblk_entity;
+  // // std::cout << "blockHeader->endblk_entity start"<< std::endl;
+  // parseDWGObject(endblk_entity->obj, blockHeaderComponent, env);
+  // // std::cout << "blockHeader->endblk_entity end"<< std::endl;
 
-  // std::cout << "blockHeader->inserts end"<< std::endl;
-  BITCODE_H layout = blockHeader->layout;
-  // std::cout << "blockHeader->layout start"<< std::endl;
-  parseDWGObject(layout->obj, blockHeaderComponent, env);
+  // std::cout << "blockHeader: "<< blockHeaderObject << std::endl;
+  // BITCODE_H layout = blockHeader->layout;
+  // // std::cout << "blockHeader->layout start"<< std::endl;
+  // parseDWGObject(layout->obj, blockHeaderComponent, env);
   // std::cout << "blockHeader->layout end"<< std::endl;
   // BITCODE_RS flag2 = blockHeader->flag2;
   // // std::cout << "blockHeader->flag2: " << flag2 << std::endl;
@@ -1146,17 +1176,17 @@ void parseBlockHeader(Dwg_Object_Object* object_object, Napi::Object jsonObj, Na
   // BITCODE_RL block_offset_r11 = blockHeader->block_offset_r11;
   // // std::cout << "blockHeader->block_offset_r11: " << block_offset_r11 << std::endl;
   blockHeaderObject.Set("component", blockHeaderComponent);
-  uint32_t length = blockHeaderArray.Length();
-  blockHeaderArray.Set(length, blockHeaderObject);
-  jsonObj.Set("blockHeader", blockHeaderArray);
+  // uint32_t length = blockHeaderArray.Length();
+  // blockHeaderArray.Set(length, blockHeaderObject);
+  jsonObj.Set(name, blockHeaderObject);
 }
 
-void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_INSERT* insert = object->tio.entity->tio.INSERT;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1197,10 +1227,10 @@ void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   // BITCODE_BL        num_owned = insert->num_owned;
   // // std::cout << "insert->num_owned: " << num_owned << std::endl;
 
-  BITCODE_H   block_header = insert->block_header;
-  if(block_header != nullptr){
-    parseBlockHeader(block_header->obj->tio.object, insertObject, env);
-  }
+  // BITCODE_H   block_header = insert->block_header;
+  // if(block_header != nullptr){
+  //   parseBlockHeader(block_header->obj->tio.object, insertObject, env);
+  // }
 
   // BITCODE_RS  num_cols = insert->num_cols;
   // // std::cout << "insert->num_cols: " << num_cols << std::endl;
@@ -1210,23 +1240,24 @@ void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
   // // std::cout << "insert->col_spacing: " << col_spacing << std::endl;
   // BITCODE_RD  row_spacing = insert->row_spacing;
   // // std::cout << "insert->row_spacing: " << row_spacing << std::endl;
-  BITCODE_TV  block_name = insert->block_name;
-  if(block_name != nullptr){
-    std::string str_block_name = parseChar(block_name);
-    // std::cout << "insert->block_name: " << str_block_name << std::endl;
-  }
+  // BITCODE_TV  block_name = insert->block_name;
+  // std::cout << "insert->block_name: " << insert->block_header->obj->name << std::endl;
+  Dwg_Object_BLOCK_HEADER* blockHeader = insert->block_header->obj->tio.object->tio.BLOCK_HEADER;
+  std::string block_header_name = parseChar(blockHeader->name);
+  insertObject.Set("block_name", block_header_name);
+  // std::cout << "insert->block_header_name: " << block_header_name << std::endl;
   uint32_t length = insertArray.Length();
   insertArray.Set(length, insertObject);
   jsonObj.Set("insert", insertArray);
 }
 
 // 선
-void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_LINE* line = object->tio.entity->tio.LINE;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1262,13 +1293,13 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // 원
-void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_CIRCLE* circle = object->tio.entity->tio.CIRCLE;
   char *layer_name = EntityLayerName(object);
   // std::cout << "DWG layerName: " << layer_name <<","<<checkLayerName<< std::endl;
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1290,12 +1321,12 @@ void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
 }
 
 // 물리선
-void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_LWPOLYLINE* lwPolyline = object->tio.entity->tio.LWPOLYLINE;
   char *layer_name = EntityLayerName(object);
   
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1330,12 +1361,12 @@ void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   jsonObj.Set("lwPolyline", lwPolylineArray);
 }
 
-void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_POLYLINE_2D* polyline2D = object->tio.entity->tio.POLYLINE_2D;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1352,24 +1383,24 @@ void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   BITCODE_H first_vertex = polyline2D->first_vertex;
   if(first_vertex != nullptr){
     // std::cout << "polyline2D->first_vertex start"<< std::endl;
-    parseDWGObject(first_vertex->obj, polyline2DComponent, env);
+    parseDWGObject(first_vertex->obj, polyline2DComponent, env, false);
     // std::cout << "polyline2D->first_vertex end"<< std::endl;
   }
   BITCODE_H last_vertex = polyline2D->last_vertex;
   if(last_vertex != nullptr){
     // std::cout << "polyline2D->last_vertex start"<< std::endl;
-    parseDWGObject(last_vertex->obj, polyline2DComponent, env);
+    parseDWGObject(last_vertex->obj, polyline2DComponent, env, false);
     // std::cout << "polyline2D->last_vertex end"<< std::endl;
   }
   BITCODE_H *vertex = polyline2D->vertex;
   for(BITCODE_BL i = 0; i < num_owned; i++) {
     Dwg_Object* object = vertex[i]->obj;
-    parseDWGObject(object, polyline2DComponent, env);
+    parseDWGObject(object, polyline2DComponent, env, false);
   }
   BITCODE_H seqend = polyline2D->seqend;
   if(seqend != nullptr){
     // std::cout << "polyline2D->seqend start"<< std::endl;
-    parseDWGObject(seqend->obj, polyline2DComponent, env);
+    parseDWGObject(seqend->obj, polyline2DComponent, env, false);
     // std::cout << "polyline2D->seqend end"<< std::endl;
   }
   /* 1: closed, 2: curve_fit, 4: spline_fit, 8: 3d, 0x10: 3dmesh,
@@ -1411,12 +1442,12 @@ void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   // std::cout << "polyline2D logs 3: " << std::endl;
 }
 
-void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_VERTEX_2D* vertex2D = object->tio.entity->tio.VERTEX_2D;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
 
@@ -1453,12 +1484,12 @@ void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env)
 }
 
 // 타원(?) 파싱
-void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
   Dwg_Entity_ELLIPSE* ellipse = object->tio.entity->tio.ELLIPSE;
   char *layer_name = EntityLayerName(object);
     
   // if(strcmp(checkLayerName, "") != 0 && strcmp(checkLayerName, layer_name) != 0) {
-  if(!contains(charArray, layer_name)) {
+  if(!contains(charArray, layer_name) && isCheckLayer) {
     return;
   }
   // Napi::Array ellipseArray = jsonObj.Get("ellipse").As<Napi::Array>();
@@ -1816,63 +1847,66 @@ std::string ExtractDWGData(Dwg_Data dwg, Napi::Array jsonArr, Napi::Env env) {
   return std::string(dwg_version_type(dwg.header.from_version));
 }
 
-void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env) {
+void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
     if(object){
       int type = (int)object->fixedtype;
       switch(type){
         case DWG_TYPE_ARC:
-          parseEntityARC(object, jsonArr, env);
+          parseEntityARC(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_LINE:
-          parseEntityLine(object, jsonArr, env);
+          parseEntityLine(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_CIRCLE:
-          parseEntityCircle(object, jsonArr, env);
+          parseEntityCircle(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_POLYLINE_2D:
-          parseEntityPolyline2D(object, jsonArr, env);
+          parseEntityPolyline2D(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_POLYLINE_3D:
-          // parseEntityLine(object, jsonArr, env);
+          // parseEntityLine(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_BLOCK:
-          parseBlock(object, jsonArr, env);
+          parseBlock(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_INSERT:
-          // parseEntityInsert(object, jsonArr, env);
+          parseEntityInsert(object, jsonArr, env, isCheckLayer);
+          break;
+        case DWG_TYPE_BLOCK_HEADER:
+          parseObjectBlockHeader(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_MLINE:
-          // parseEntityMLine(object, jsonArr, env);
+          // parseEntityMLine(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_ELLIPSE:
-          parseEntityEllipse(object, jsonArr, env);
+          parseEntityEllipse(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_POINT:
-          parseEntityPoint(object, jsonArr, env);
+          parseEntityPoint(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_HELIX:
-          // parseEntityHELIX(object, jsonArr, env);
+          // parseEntityHELIX(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_TEXT:
-          parseEntityText(object, jsonArr, env);
+          parseEntityText(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_MTEXT:
-          parseEntityMText(object, jsonArr, env);
+          parseEntityMText(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_SPLINE:
-          parseEntitySpline(object, jsonArr, env);
+          parseEntitySpline(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_XLINE:
-          parseEntityXline(object, jsonArr, env);
+          parseEntityXline(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_LWPOLYLINE:
-          parseEntityLwPolyline(object, jsonArr, env);
+          parseEntityLwPolyline(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_SOLID:
-          parseEntitySolid(object, jsonArr, env);
+          parseEntitySolid(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_HATCH:
-          parseEntityHatch(object, jsonArr, env);
+          parseEntityHatch(object, jsonArr, env, isCheckLayer);
           break;
       }
     }
@@ -1948,7 +1982,7 @@ std::string CheckObjectRef(Dwg_Data *restrict dwg, Napi::Array jsonArr, Napi::En
     Dwg_Object *object = &dwg->object[i];
     if(object != nullptr){
       // Dwg_Object* object = dwg->object_ref[i]->obj;
-      parseDWGObject(object, jsonArr, env);  
+      parseDWGObject(object, jsonArr, env, true);
     }
     
   }
@@ -2023,19 +2057,19 @@ bit_convert_TU (const BITCODE_TU restrict wstr)
 }
 
 std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env env) {
-  std::cout << "DWG layer: 1" << std::endl;
+  // std::cout << "DWG layer: 1" << std::endl;
   unsigned int layer_count = dwg_get_layer_count(dwg);
-  std::cout << "DWG layer: 2 "<< layer_count << std::endl;
+  // std::cout << "DWG layer: 2 "<< layer_count << std::endl;
   Dwg_Object_LAYER ** layer_objects =  dwg_get_layers(dwg);
-  std::cout << "DWG layer: 3" << std::endl;
+  // std::cout << "DWG layer: 3" << std::endl;
   Napi::Array layerNames = Napi::Array::New(env);
-  std::cout << "DWG layer: 4" << std::endl;
+  // std::cout << "DWG layer: 4" << std::endl;
   int error;
   char *name;
   for (unsigned int i = 0; i < layer_count; i++)
     {
-      std::cout << "DWG layer: 5" << std::endl;
-      std::cout << "DWG layer.index: " << i << std::endl;
+      // std::cout << "DWG layer: 5" << std::endl;
+      // std::cout << "DWG layer.index: " << i << std::endl;
       Dwg_Object_LAYER * layer = layer_objects[i];
       // std::cout << "DWG index: " << i << std::endl;
       if(layer){
@@ -2043,7 +2077,7 @@ std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env e
         name = dwg_obj_layer_get_name(layer, &error);
         uint32_t length = layerNames.Length();
         layerNames.Set(length, Napi::String::New(env, name));
-        std::cout << "DWG layer.name: " << name << std::endl;
+        // std::cout << "DWG layer.name: " << name << std::endl;
         free(name);
         
         // std::cout << "DWG layer.flag: " << layer->flag << std::endl;

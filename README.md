@@ -69,7 +69,16 @@ filePath: dwg 파일 경로
 layerName: object를 추출할 레이어이름
 
 ### response
-모든 키값은 배열
+Layer[]
+
+#### Layer
+
+|key|Desc|
+|----|---|
+|layer_name|레이어 이름, blockHeader|
+|component|Component집합, blockHeader집합|
+
+#### Component
 |Key|Desc|
 |-----|----|
 |arc|원형곡선|
@@ -80,7 +89,14 @@ layerName: object를 추출할 레이어이름
 |solid|솔리드|
 |text|텍스트|
 |mtext|여러줄텍스트|
+|insert|참조객체|
 |viewPosition|화면중심|
+
+#### blockHeaderComponent
+|key|type|Desc|
+|---|----|----|
+|${blockHeaderName}|{flag:number, component: Layer[]}|참조되는 이름|
+
 
 ## 파싱타입
 ### arc
@@ -142,6 +158,14 @@ layerName: object를 추출할 레이어이름
 |text|stirng|텍스트|
 |size|number|텍스트높이(사이즈)|
 |width|number|가로크기|
+
+### insert
+|key|type|desc|
+|----|----|----|
+|base|number[]|기준좌표|
+|scale|number[]|확대값|
+|rotation|number|회전값|
+|block_name|string|blockHeader에서 찾을 이름|
 
 ### viewPosition
 화면 중앙 좌표값
