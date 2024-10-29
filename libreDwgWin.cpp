@@ -264,12 +264,14 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
     Napi::Array segArray = Napi::Array::New(env);
     Napi::Array lineArray = Napi::Array::New(env);
     Napi::Array arcArray = Napi::Array::New(env);
+    Dwg_HATCH_PathSeg *segs = paths->segs;
+    bool isSegEnd = false;
+    bool isPolyPathEnd = false;
     for(BITCODE_BL j = 0; j < paths->num_segs_or_paths; j++){
       Napi::Object segObject = Napi::Object::New(env);
-      Dwg_HATCH_PathSeg *segs = &paths->segs[j];
       Dwg_HATCH_PolylinePath *polyline_paths = &paths->polyline_paths[j];
       uint32_t lineLength = lineArray.Length();
-      if(polyline_paths != nullptr) {
+      if(polyline_paths != nullptr && isPolyPathEnd != true) {
         Napi::Array polyline_paths_point = Napi::Array::New(env);
         // std::cout << "DWG polyline_paths->point" << j <<" : " << polyline_paths->point.x;
         // std::cout << ", " << polyline_paths->point.y << std::endl;
@@ -282,115 +284,96 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
         lineArray.Set(lineLength + 1, Napi::Number::New(env, polyline_paths->point.y));
         lineArray.Set(lineLength + 2, Napi::Number::New(env, 0));
         segObject.Set("polyline_paths", polyline_paths_point);
+      } else {
+        isPolyPathEnd = true;
       }
-      if(segs != nullptr){
+      if(segs != nullptr && isSegEnd != true){
         // std::cout << "DWG segs: " << segs << std::endl;
         // std::cout << "DWG segs->curve_type: " << segs->curve_type << std::endl;
+        BITCODE_RC curve_type = segs->curve_type;
         segObject.Set("curve_type", Napi::Number::New(env, segs->curve_type));
-        Napi::Array first_endpoint = Napi::Array::New(env, 2);
-        first_endpoint.Set(zero, Napi::Number::New(env, segs->first_endpoint.x));
-        first_endpoint.Set(1, Napi::Number::New(env, segs->first_endpoint.y));
-        segObject.Set("first_endpoint", first_endpoint);
-        // std::cout << "DWG segs->first_endpoint: " << segs->first_endpoint.x;
-        // std::cout << ", " << segs->first_endpoint.y << std::endl;
-        Napi::Array second_endpoint = Napi::Array::New(env, 2);
-        second_endpoint.Set(zero, Napi::Number::New(env, segs->second_endpoint.x));
-        second_endpoint.Set(1, Napi::Number::New(env, segs->second_endpoint.y));
-        segObject.Set("second_endpoint", second_endpoint);
-        // std::cout << "DWG segs->second_endpoint: " << segs->second_endpoint.x;
-        // std::cout << ", " << segs->second_endpoint.y << std::endl;
-        Napi::Array center = Napi::Array::New(env, 2);
-        center.Set(zero, Napi::Number::New(env, segs->center.x));
-        center.Set(1, Napi::Number::New(env, segs->center.y));
-        segObject.Set("center", center);
-        // std::cout << "DWG segs->center: " << segs->center.x;
-        // std::cout << ", " << segs->center.y << std::endl;
-        // std::cout << "DWG segs->radius: " << segs->radius << std::endl;
-        segObject.Set("radius", Napi::Number::New(env, segs->radius));
-        // std::cout << "DWG segs->start_angle: " << segs->start_angle << std::endl;
-        segObject.Set("start_angle", Napi::Number::New(env, segs->start_angle));
-        // std::cout << "DWG segs->end_angle: " << segs->end_angle << std::endl;
-        segObject.Set("end_angle", Napi::Number::New(env, segs->end_angle));
-        // std::cout << "DWG segs->endpoint: " << segs->endpoint.x;
-        // std::cout << ", " << segs->endpoint.y << std::endl;
-        Napi::Array endpoint = Napi::Array::New(env, 2);
-        endpoint.Set(zero, Napi::Number::New(env, segs->endpoint.x));
-        endpoint.Set(1, Napi::Number::New(env, segs->endpoint.y));
-        segObject.Set("endpoint", endpoint);
-        // std::cout << "DWG segs->degree: " << segs->degree << std::endl;
-        segObject.Set("end_angle", Napi::Number::New(env, segs->degree));
-        // std::cout << "DWG segs->is_rational: " << segs->is_rational << std::endl;
-        segObject.Set("end_angle", Napi::Number::New(env, segs->is_rational));
-        // std::cout << "DWG segs->is_periodic: " << segs->is_periodic << std::endl;
-        segObject.Set("end_angle", Napi::Number::New(env, segs->is_periodic));
-        // std::cout << "DWG segs->num_knots: " << segs->num_knots << std::endl;
-        Napi::Array knots = Napi::Array::New(env, segs->num_knots);
-        BITCODE_BD* knot = segs->knots;
-        for(BITCODE_BL k = 0; k < segs->num_knots; k++) {
-          // std::cout << "DWG segs->knot: " << knot << ", " << *knot << ", " << &knot << std::endl;
-          knots.Set(k, Napi::Number::New(env, *knot));
-          knot++;
-        }
-        segObject.Set("knots", knots);
-        // std::cout << "DWG segs->num_control_points: " << segs->num_control_points << std::endl;
-        BITCODE_BL num_fitpts = segs->num_fitpts;
-        // std::cout << "DWG segs->num_fitpts: " << segs->num_fitpts << std::endl;
-        Napi::Array fitptsArr = Napi::Array::New(env, segs->num_fitpts);
-        BITCODE_2RD* fitpts = segs->fitpts;
-        for(BITCODE_BL k = 0; k < num_fitpts; k++) {
-          BITCODE_2RD fitpt = fitpts[k];
-          Napi::Array fitptRd = Napi::Array::New(env, 3);
-          fitptRd.Set(zero, fitpt.x);
-          fitptRd.Set(1, fitpt.y);
-          fitptRd.Set(2, 0);
-          fitptsArr.Set(k, fitptRd);
-        }
-        segObject.Set("fitpts", fitptsArr);
-        // std::cout << "DWG segs->start_tangent: " << segs->start_tangent.x;
-        // std::cout << ", " << segs->start_tangent.y << std::endl;
-        Napi::Array start_tangent = Napi::Array::New(env, 2);
-        start_tangent.Set(zero, Napi::Number::New(env, segs->start_tangent.x));
-        start_tangent.Set(1, Napi::Number::New(env, segs->start_tangent.y));
-        segObject.Set("start_tangent", start_tangent);
-        // std::cout << "DWG segs->end_tangent: " << segs->end_tangent.x;
-        // std::cout << ", " << segs->end_tangent.y << std::endl;
-        Napi::Array end_tangent = Napi::Array::New(env, 2);
-        end_tangent.Set(zero, Napi::Number::New(env, segs->end_tangent.x));
-        end_tangent.Set(1, Napi::Number::New(env, segs->end_tangent.y));
-        segObject.Set("end_tangent", end_tangent);
-        // BITCODE_BL num_boundary_handles;
-        // std::cout << "DWG segs->num_boundary_handles: " << num_boundary_handles << std::endl;
-        // BITCODE_H* boundary_handles;
-        // BITCODE_B bulges_present;
-        // std::cout << "DWG segs->bulges_present: " << bulges_present << std::endl;
-        // BITCODE_B closed;
-        // std::cout << "DWG segs->closed: " << closed << std::endl;
-        // Dwg_HATCH_PolylinePath* polyline_paths;
-        // while(true) {
-        //   if(polyline_paths == nullptr){
-        //     break;
-        //   }
-        //   // std::cout << "DWG segs->polyline_paths: " << polyline_paths->point.x;
-        //   // std::cout << ", " << polyline_paths->point.y << std::endl;
-        //   polyline_paths++;
-        // }
-        if(segs->curve_type == 1) {
-          lineArray.Set(lineLength + zero, Napi::Number::New(env, segs->first_endpoint.x));
-          lineArray.Set(lineLength + 1, Napi::Number::New(env, segs->first_endpoint.y));
-          lineArray.Set(lineLength + 2, Napi::Number::New(env, 0));
-        } else if(segs->curve_type == 2) {
-          uint32_t arcLength = arcArray.Length();
-          Napi::Object arcObject = Napi::Object::New(env);
-          arcObject.Set("center", center);
-          arcObject.Set("radius", Napi::Number::New(env, segs->radius));
-          arcObject.Set("start_angle", Napi::Number::New(env, segs->start_angle));
-          arcObject.Set("end_angle", Napi::Number::New(env, segs->end_angle));
-          arcArray.Set(arcLength, arcObject);
+        if(curve_type == 1) {
+          Napi::Array first_endpoint = Napi::Array::New(env, 2);
+          first_endpoint.Set(zero, Napi::Number::New(env, segs->first_endpoint.x));
+          first_endpoint.Set(1, Napi::Number::New(env, segs->first_endpoint.y));
+          segObject.Set("first_endpoint", first_endpoint);
+          // std::cout << "DWG segs->first_endpoint: " << segs->first_endpoint.x;
+          // std::cout << ", " << segs->first_endpoint.y << std::endl;
+          Napi::Array second_endpoint = Napi::Array::New(env, 2);
+          second_endpoint.Set(zero, Napi::Number::New(env, segs->second_endpoint.x));
+          second_endpoint.Set(1, Napi::Number::New(env, segs->second_endpoint.y));
+          segObject.Set("second_endpoint", second_endpoint);
+          // std::cout << "DWG segs->second_endpoint: " << segs->second_endpoint.x;
+          // std::cout << ", " << segs->second_endpoint.y << std::endl;
+        } else if(curve_type == 2) {
+          Napi::Array center = Napi::Array::New(env, 2);
+          center.Set(zero, Napi::Number::New(env, segs->center.x));
+          center.Set(1, Napi::Number::New(env, segs->center.y));
+          segObject.Set("center", center);
+          // std::cout << "DWG segs->center: " << segs->center.x;
+          // std::cout << ", " << segs->center.y << std::endl;
+          // std::cout << "DWG segs->radius: " << segs->radius << std::endl;
+          segObject.Set("radius", Napi::Number::New(env, segs->radius));
+          // std::cout << "DWG segs->start_angle: " << segs->start_angle << std::endl;
+          segObject.Set("start_angle", Napi::Number::New(env, segs->start_angle));
+          // std::cout << "DWG segs->end_angle: " << segs->end_angle << std::endl;
+          segObject.Set("end_angle", Napi::Number::New(env, segs->end_angle));
+        } else if(curve_type == 3) {
+          // std::cout << "DWG segs->endpoint: " << segs->endpoint.x;
+          // std::cout << ", " << segs->endpoint.y << std::endl;
+          Napi::Array endpoint = Napi::Array::New(env, 2);
+          endpoint.Set(zero, Napi::Number::New(env, segs->endpoint.x));
+          endpoint.Set(1, Napi::Number::New(env, segs->endpoint.y));
+          segObject.Set("endpoint", endpoint);
+        } else if(curve_type == 4) {
+          // std::cout << "DWG segs->degree: " << segs->degree << std::endl;
+          segObject.Set("end_angle", Napi::Number::New(env, segs->degree));
+          // std::cout << "DWG segs->is_rational: " << segs->is_rational << std::endl;
+          segObject.Set("end_angle", Napi::Number::New(env, segs->is_rational));
+          // std::cout << "DWG segs->is_periodic: " << segs->is_periodic << std::endl;
+          segObject.Set("end_angle", Napi::Number::New(env, segs->is_periodic));
+          // std::cout << "DWG segs->num_knots: " << segs->num_knots << std::endl;
+          Napi::Array knots = Napi::Array::New(env, segs->num_knots);
+          BITCODE_BD* knot = segs->knots;
+          for(BITCODE_BL k = 0; k < segs->num_knots; k++) {
+            // std::cout << "DWG segs->knot: " << knot << ", " << *knot << ", " << &knot << std::endl;
+            knots.Set(k, Napi::Number::New(env, *knot));
+            knot++;
+          }
+          segObject.Set("knots", knots);
+          // std::cout << "DWG segs->num_control_points: " << segs->num_control_points << std::endl;
+          BITCODE_BL num_fitpts = segs->num_fitpts;
+          // std::cout << "DWG segs->num_fitpts: " << segs->num_fitpts << std::endl;
+          Napi::Array fitptsArr = Napi::Array::New(env, segs->num_fitpts);
+          BITCODE_2RD* fitpts = segs->fitpts;
+          for(BITCODE_BL k = 0; k < num_fitpts; k++) {
+            BITCODE_2RD fitpt = fitpts[k];
+            Napi::Array fitptRd = Napi::Array::New(env, 3);
+            fitptRd.Set(zero, fitpt.x);
+            fitptRd.Set(1, fitpt.y);
+            fitptRd.Set(2, 0);
+            fitptsArr.Set(k, fitptRd);
+          }
+          segObject.Set("fitpts", fitptsArr);
+          // std::cout << "DWG segs->start_tangent: " << segs->start_tangent.x;
+          // std::cout << ", " << segs->start_tangent.y << std::endl;
+          Napi::Array start_tangent = Napi::Array::New(env, 2);
+          start_tangent.Set(zero, Napi::Number::New(env, segs->start_tangent.x));
+          start_tangent.Set(1, Napi::Number::New(env, segs->start_tangent.y));
+          segObject.Set("start_tangent", start_tangent);
+          // std::cout << "DWG segs->end_tangent: " << segs->end_tangent.x;
+          // std::cout << ", " << segs->end_tangent.y << std::endl;
+          Napi::Array end_tangent = Napi::Array::New(env, 2);
+          end_tangent.Set(zero, Napi::Number::New(env, segs->end_tangent.x));
+          end_tangent.Set(1, Napi::Number::New(env, segs->end_tangent.y));
+          segObject.Set("end_tangent", end_tangent);
         }
       } else {
+        isSegEnd = true;
         // std::cout << "seg is null" << std::endl;
       }
       segArray.Set(j, segObject);
+      segs++;
     }
     pathObject.Set("seg", segArray);
     pathObject.Set("line", lineArray);
@@ -1909,7 +1892,7 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
           parseEntitySolid(object, jsonArr, env, isCheckLayer);
           break;
         case DWG_TYPE_HATCH:
-          // parseEntityHatch(object, jsonArr, env, isCheckLayer);
+          parseEntityHatch(object, jsonArr, env, isCheckLayer);
           break;
       }
     }

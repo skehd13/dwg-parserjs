@@ -5,16 +5,11 @@ libreDWG를 직접 PC에 설치해야 사용 가능합니다.
 ## libreDWG 설치방법
 
 ### OSX
-맥실리콘에서 사용하는 경우 rosetta로 터미널 이용하거나 VSCode 터미널에서을 열어야 정상적으로 동작
-    
-    % umame -m
-    x86_64
-위처럼 출력되야함
+
 ```
 brew install autoconf automake gcc make texinfo
 git clone https://github.com/LibreDWG/libredwg.git
 cd libredwg
-export ARCHFLAGS="-arch x86_64"
 ./autogen.sh
 ./configure
 make
@@ -90,6 +85,7 @@ Layer[]
 |text|텍스트|
 |mtext|여러줄텍스트|
 |insert|참조객체|
+|hatch|해치|
 |viewPosition|화면중심|
 
 #### blockHeaderComponent
@@ -166,6 +162,21 @@ Layer[]
 |scale|number[]|확대값|
 |rotation|number|회전값|
 |block_name|string|blockHeader에서 찾을 이름|
+
+
+### hatch
+|key|type|desc|
+|----|----|----|
+|name|string|해치이름|
+|is_solid_fill|boolean|해당해치가 Solid인지|
+|path|IHatchPath[]|해치 경로배열|
+
+### hatchPath
+|key|type|desc|
+|----|----|----|
+|flag|number|flag|
+|seg|IHatchPathSeg[]|해치경로 seg|
+|line|number[]|선경로 x,y,z순의 number 배열|
 
 ### viewPosition
 화면 중앙 좌표값
