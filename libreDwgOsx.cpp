@@ -603,7 +603,6 @@ void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env e
   Napi::Object blockHeaderObject = Napi::Object::New(env);
   blockHeaderObject.Set("flag", static_cast<int>(blockHeader->flag));
   BITCODE_BL num_owned = blockHeader->num_owned;
-  BITCODE_RL num_inserts = blockHeader->num_inserts;
   Napi::Array blockHeaderComponent = Napi::Array::New(env);
   
   if(static_cast<int>(blockHeader->flag) < 68){
@@ -763,7 +762,7 @@ void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
 
   Napi::Array polyline2DArray = checkObject(jsonObj, "polyline2D", env);
   Napi::Object polyline2DObject = Napi::Object::New(env);
-  Napi::Array polyline2DComponent = Napi::Array::New(env)
+  Napi::Array polyline2DComponent = Napi::Array::New(env);
   BITCODE_BL num_owned = polyline2D->num_owned;
   BITCODE_H first_vertex = polyline2D->first_vertex;
   if(first_vertex != nullptr){
