@@ -911,9 +911,9 @@ std::string ExtractDWGData(Dwg_Data* dwg, Napi::Array jsonArr, Napi::Env env) {
   Napi::Object jsonObj = checkArray(jsonArr, "viewPosition", env);
   Napi::Array viewPosition = checkObject(jsonObj,"viewPosition", env);
   
-  viewPosition.Set(zero, Napi::Number::New(env, (modelxmax+modelxmin)/2));
-  viewPosition.Set(1, Napi::Number::New(env, (modelymax+modelymin)/2));
-  viewPosition.Set(2, Napi::Number::New(env, (modelzmax+modelzmin)/2));
+  viewPosition.Set(zero, Napi::Number::New(env, modelxmax - (modelxmax-modelxmin)/2));
+  viewPosition.Set(1, Napi::Number::New(env, modelymax - (modelymax-modelymin)/2));
+  viewPosition.Set(2, Napi::Number::New(env, (modelzmax-modelzmin)/2));
   // jsonObj.Set("viewPosition", viewPosition);
   return std::string(dwg_version_type(dwg->header.from_version));
 }
