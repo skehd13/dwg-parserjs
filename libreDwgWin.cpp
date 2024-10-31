@@ -51,7 +51,7 @@ void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env,
 void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 
 void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
-std::string ExtractDWGData(Dwg_Data dwg, Napi::Array jsonArr, Napi::Env env);
+std::string ExtractDWGData(Dwg_Data* dwg, Napi::Array jsonArr, Napi::Env env);
 void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer);
 std::string CheckObjectRef(Dwg_Data *restrict dwg, Napi::Array jsonArr, Napi::Env env);
 char* EntityLayerName(Dwg_Object* object);
@@ -143,11 +143,10 @@ Napi::Object checkArray(Napi::Array jsonArr, std::string key, Napi::Env env ) {
 
 Napi::Array checkObject(Napi::Object jsonObj, std::string key, Napi::Env env) {
   Napi::Array array;
-  if(jsonObj.Has(Napi::String::New(env, key))) {
-    array = jsonObj.Get(key).As<Napi::Array>();
-  } else{
-    array = Napi::Array::New(env);
-  }
+  if(jsonObj.Has(Napi::String::New(env, key)) == false) {
+    jsonObj.Set(key, Napi::Array::New(env));
+  } 
+  array = jsonObj.Get(key).As<Napi::Array>();
   return array;
 }
 
@@ -160,26 +159,26 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array hatchArray = checkObject(jsonObj, "hatch", env);
-
+  layer_name = nullptr;
   Napi::Object hatchObj = Napi::Object::New(env);
   BITCODE_BL is_gradient_fill = hatch->is_gradient_fill;
-  hatchObj.Set("is_gradient_fill", Napi::Number::New(env, is_gradient_fill));
-  BITCODE_BL reserved= hatch->reserved;
-  hatchObj.Set("reserved", Napi::Number::New(env, reserved));
-  BITCODE_BD gradient_angle= hatch->gradient_angle;
-  hatchObj.Set("gradient_angle", Napi::Number::New(env, gradient_angle));
-  BITCODE_BD gradient_shift= hatch->gradient_shift;
-  hatchObj.Set("gradient_shift", Napi::Number::New(env, gradient_shift));
-  BITCODE_BL single_color_gradient= hatch->single_color_gradient;
-  hatchObj.Set("single_color_gradient", Napi::Number::New(env, single_color_gradient));
-  BITCODE_BD gradient_tint= hatch->gradient_tint;
-  hatchObj.Set("gradient_tint", Napi::Number::New(env, gradient_tint));
-  BITCODE_BL num_colors= hatch->num_colors;
-  hatchObj.Set("num_colors", Napi::Number::New(env, num_colors));
+  // hatchObj.Set("is_gradient_fill", Napi::Number::New(env, is_gradient_fill));
+  // BITCODE_BL reserved= hatch->reserved;
+  // hatchObj.Set("reserved", Napi::Number::New(env, reserved));
+  // BITCODE_BD gradient_angle= hatch->gradient_angle;
+  // hatchObj.Set("gradient_angle", Napi::Number::New(env, gradient_angle));
+  // BITCODE_BD gradient_shift= hatch->gradient_shift;
+  // hatchObj.Set("gradient_shift", Napi::Number::New(env, gradient_shift));
+  // BITCODE_BL single_color_gradient= hatch->single_color_gradient;
+  // hatchObj.Set("single_color_gradient", Napi::Number::New(env, single_color_gradient));
+  // BITCODE_BD gradient_tint= hatch->gradient_tint;
+  // hatchObj.Set("gradient_tint", Napi::Number::New(env, gradient_tint));
+  // BITCODE_BL num_colors= hatch->num_colors;
+  // hatchObj.Set("num_colors", Napi::Number::New(env, num_colors));
   // Dwg_HATCH_Color* colors= hatch->colors;
-  BITCODE_T gradient_name= hatch->gradient_name; 
-  std::string str_gradient_name = parseChar(gradient_name);
-  hatchObj.Set("double_flag", Napi::String::New(env, str_gradient_name));
+  // BITCODE_T gradient_name= hatch->gradient_name; 
+  // std::string str_gradient_name = parseChar(gradient_name);
+  // hatchObj.Set("double_flag", Napi::String::New(env, str_gradient_name));
   /* 1: SPHERICAL, 2: HEMISPHERICAL, 3: CURVED, 4: LINEAR, 5: CYLINDER */
 
   BITCODE_TV name= hatch->name;
@@ -187,34 +186,34 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   hatchObj.Set("name", Napi::String::New(env, str_name));
   BITCODE_B is_solid_fill= hatch->is_solid_fill;
   hatchObj.Set("is_solid_fill", is_solid_fill);
-  BITCODE_B is_associative= hatch->is_associative;
-  hatchObj.Set("is_associative", is_associative);
+  // BITCODE_B is_associative= hatch->is_associative;
+  // hatchObj.Set("is_associative", is_associative);
   BITCODE_BL num_paths= hatch->num_paths;
-  hatchObj.Set("num_paths", Napi::Number::New(env, num_paths));
+  // hatchObj.Set("num_paths", Napi::Number::New(env, num_paths));
   Napi::Array pathArray = Napi::Array::New(env);
+  Dwg_HATCH_Path *paths= hatch->paths; 
   for(BITCODE_BL i = 0; i <num_paths; i++){
     Napi::Object pathObject = Napi::Object::New(env);
-    Dwg_HATCH_Path *paths= &hatch->paths[i]; 
     pathObject.Set("flag", Napi::Number::New(env, paths->flag));
     Napi::Array segArray = Napi::Array::New(env);
-    Napi::Array lineArray = Napi::Array::New(env);
-    Napi::Array arcArray = Napi::Array::New(env);
+    // Napi::Array lineArray = Napi::Array::New(env);
+    // Napi::Array arcArray = Napi::Array::New(env);
     Dwg_HATCH_PathSeg *segs = paths->segs;
     bool isSegEnd = false;
     bool isPolyPathEnd = false;
     for(BITCODE_BL j = 0; j < paths->num_segs_or_paths; j++){
       Napi::Object segObject = Napi::Object::New(env);
       Dwg_HATCH_PolylinePath *polyline_paths = &paths->polyline_paths[j];
-      uint32_t lineLength = lineArray.Length();
+      // uint32_t lineLength = lineArray.Length();
       if(polyline_paths != nullptr && isPolyPathEnd != true) {
         Napi::Array polyline_paths_point = Napi::Array::New(env);
         polyline_paths_point.Set(zero, Napi::Number::New(env, polyline_paths->point.x));
         polyline_paths_point.Set(1, Napi::Number::New(env, polyline_paths->point.y));
         polyline_paths_point.Set(2, Napi::Number::New(env, 0));
 
-        lineArray.Set(lineLength + zero, Napi::Number::New(env, polyline_paths->point.x));
-        lineArray.Set(lineLength + 1, Napi::Number::New(env, polyline_paths->point.y));
-        lineArray.Set(lineLength + 2, Napi::Number::New(env, 0));
+        // lineArray.Set(lineLength + zero, Napi::Number::New(env, polyline_paths->point.x));
+        // lineArray.Set(lineLength + 1, Napi::Number::New(env, polyline_paths->point.y));
+        // lineArray.Set(lineLength + 2, Napi::Number::New(env, 0));
         segObject.Set("polyline_paths", polyline_paths_point);
       } else {
         isPolyPathEnd = true;
@@ -239,42 +238,42 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
           segObject.Set("radius", Napi::Number::New(env, segs->radius));
           segObject.Set("start_angle", Napi::Number::New(env, segs->start_angle));
           segObject.Set("end_angle", Napi::Number::New(env, segs->end_angle));
-        } else if(curve_type == 3) {
-          Napi::Array endpoint = Napi::Array::New(env, 2);
-          endpoint.Set(zero, Napi::Number::New(env, segs->endpoint.x));
-          endpoint.Set(1, Napi::Number::New(env, segs->endpoint.y));
-          segObject.Set("endpoint", endpoint);
-        } else if(curve_type == 4) {
-          segObject.Set("end_angle", Napi::Number::New(env, segs->degree));
-          segObject.Set("end_angle", Napi::Number::New(env, segs->is_rational));
-          segObject.Set("end_angle", Napi::Number::New(env, segs->is_periodic));
-          Napi::Array knots = Napi::Array::New(env, segs->num_knots);
-          BITCODE_BD* knot = segs->knots;
-          for(BITCODE_BL k = 0; k < segs->num_knots; k++) {
-            knots.Set(k, Napi::Number::New(env, *knot));
-            knot++;
-          }
-          segObject.Set("knots", knots);
-          BITCODE_BL num_fitpts = segs->num_fitpts;
-          Napi::Array fitptsArr = Napi::Array::New(env, segs->num_fitpts);
-          BITCODE_2RD* fitpts = segs->fitpts;
-          for(BITCODE_BL k = 0; k < num_fitpts; k++) {
-            BITCODE_2RD fitpt = fitpts[k];
-            Napi::Array fitptRd = Napi::Array::New(env, 3);
-            fitptRd.Set(zero, fitpt.x);
-            fitptRd.Set(1, fitpt.y);
-            fitptRd.Set(2, 0);
-            fitptsArr.Set(k, fitptRd);
-          }
-          segObject.Set("fitpts", fitptsArr);
-          Napi::Array start_tangent = Napi::Array::New(env, 2);
-          start_tangent.Set(zero, Napi::Number::New(env, segs->start_tangent.x));
-          start_tangent.Set(1, Napi::Number::New(env, segs->start_tangent.y));
-          segObject.Set("start_tangent", start_tangent);
-          Napi::Array end_tangent = Napi::Array::New(env, 2);
-          end_tangent.Set(zero, Napi::Number::New(env, segs->end_tangent.x));
-          end_tangent.Set(1, Napi::Number::New(env, segs->end_tangent.y));
-          segObject.Set("end_tangent", end_tangent);
+        // } else if(curve_type == 3) {
+        //   Napi::Array endpoint = Napi::Array::New(env, 2);
+        //   endpoint.Set(zero, Napi::Number::New(env, segs->endpoint.x));
+        //   endpoint.Set(1, Napi::Number::New(env, segs->endpoint.y));
+        //   segObject.Set("endpoint", endpoint);
+        // } else if(curve_type == 4) {
+        //   segObject.Set("end_angle", Napi::Number::New(env, segs->degree));
+        //   segObject.Set("end_angle", Napi::Number::New(env, segs->is_rational));
+        //   segObject.Set("end_angle", Napi::Number::New(env, segs->is_periodic));
+        //   Napi::Array knots = Napi::Array::New(env, segs->num_knots);
+        //   BITCODE_BD* knot = segs->knots;
+        //   for(BITCODE_BL k = 0; k < segs->num_knots; k++) {
+        //     knots.Set(k, Napi::Number::New(env, *knot));
+        //     knot++;
+        //   }
+        //   segObject.Set("knots", knots);
+        //   BITCODE_BL num_fitpts = segs->num_fitpts;
+        //   Napi::Array fitptsArr = Napi::Array::New(env, segs->num_fitpts);
+        //   BITCODE_2RD* fitpts = segs->fitpts;
+        //   for(BITCODE_BL k = 0; k < num_fitpts; k++) {
+        //     BITCODE_2RD fitpt = fitpts[k];
+        //     Napi::Array fitptRd = Napi::Array::New(env, 3);
+        //     fitptRd.Set(zero, fitpt.x);
+        //     fitptRd.Set(1, fitpt.y);
+        //     fitptRd.Set(2, 0);
+        //     fitptsArr.Set(k, fitptRd);
+        //   }
+        //   segObject.Set("fitpts", fitptsArr);
+        //   Napi::Array start_tangent = Napi::Array::New(env, 2);
+        //   start_tangent.Set(zero, Napi::Number::New(env, segs->start_tangent.x));
+        //   start_tangent.Set(1, Napi::Number::New(env, segs->start_tangent.y));
+        //   segObject.Set("start_tangent", start_tangent);
+        //   Napi::Array end_tangent = Napi::Array::New(env, 2);
+        //   end_tangent.Set(zero, Napi::Number::New(env, segs->end_tangent.x));
+        //   end_tangent.Set(1, Napi::Number::New(env, segs->end_tangent.y));
+        //   segObject.Set("end_tangent", end_tangent);
         }
       } else {
         isSegEnd = true;
@@ -282,53 +281,58 @@ void parseEntityHatch(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
       segArray.Set(j, segObject);
       segs++;
     }
+    segs = nullptr;
+    paths++;
     pathObject.Set("seg", segArray);
-    pathObject.Set("line", lineArray);
-    pathObject.Set("arc", arcArray);
+    // pathObject.Set("line", lineArray);
+    // pathObject.Set("arc", arcArray);
     pathArray.Set(i, pathObject);
   }
+  paths = nullptr;
   hatchObj.Set("path", pathArray);
   // also named loop
-  BITCODE_BS style= hatch->style;
-  hatchObj.Set("style", Napi::Number::New(env, style));
-  BITCODE_BS pattern_type= hatch->pattern_type;
-  hatchObj.Set("pattern_type", Napi::Number::New(env, pattern_type));
-  BITCODE_BD angle= hatch->angle;
-  hatchObj.Set("angle", Napi::Number::New(env, angle));
-  BITCODE_BD scale_spacing= hatch->scale_spacing;
-  hatchObj.Set("scale_spacing", Napi::Number::New(env, scale_spacing));
-  BITCODE_B double_flag= hatch->double_flag;
-  hatchObj.Set("double_flag", Napi::Number::New(env, double_flag));
-  BITCODE_BS num_deflines= hatch->num_deflines;
-  hatchObj.Set("num_deflines", Napi::Number::New(env, num_deflines));
-  Napi::Array deflinesArray = Napi::Array::New(env);
-  Dwg_HATCH_DefLine * deflines= hatch->deflines;
-  for(BITCODE_BS i =0; i < hatch->num_deflines; i++){
-    Napi::Object deflinesObject = Napi::Object::New(env);
-    deflinesObject.Set("angle", Napi::Number::New(env,deflines->angle));
-    Napi::Array pt0 = Napi::Array::New(env, 2);
-    pt0.Set(zero, deflines->pt0.x);
-    pt0.Set(1, deflines->pt0.y);
-    deflinesObject.Set("pt0", pt0);
-    Napi::Array offset = Napi::Array::New(env, 2);
-    offset.Set(zero, deflines->offset.x);
-    offset.Set(1, deflines->offset.y);
-    deflinesObject.Set("offset", offset);
-    BITCODE_BD* dashes = deflines->dashes;
-    Napi::Array dashesArray = Napi::Array::New(env, 2);
-    for(BITCODE_BS j = 0; j < deflines->num_dashes; j++) {
-      dashesArray.Set(j, Napi::Number::New(env, *dashes));
-      dashes++;
-    }
-    deflinesObject.Set("dashes", dashesArray);
-    deflinesArray.Set(i, deflinesObject);
-    deflines++;
-  }
-  hatchObj.Set("deflines", deflinesArray);\
+  // BITCODE_BS style= hatch->style;
+  // hatchObj.Set("style", Napi::Number::New(env, style));
+  // BITCODE_BS pattern_type= hatch->pattern_type;
+  // hatchObj.Set("pattern_type", Napi::Number::New(env, pattern_type));
+  // BITCODE_BD angle= hatch->angle;
+  // hatchObj.Set("angle", Napi::Number::New(env, angle));
+  // BITCODE_BD scale_spacing= hatch->scale_spacing;
+  // hatchObj.Set("scale_spacing", Napi::Number::New(env, scale_spacing));
+  // BITCODE_B double_flag= hatch->double_flag;
+  // hatchObj.Set("double_flag", Napi::Number::New(env, double_flag));
+  // BITCODE_BS num_deflines= hatch->num_deflines;
+  // hatchObj.Set("num_deflines", Napi::Number::New(env, num_deflines));
+  // Napi::Array deflinesArray = Napi::Array::New(env);
+  // Dwg_HATCH_DefLine * deflines= hatch->deflines;
+  // for(BITCODE_BS i =0; i < hatch->num_deflines; i++){
+  //   Napi::Object deflinesObject = Napi::Object::New(env);
+  //   deflinesObject.Set("angle", Napi::Number::New(env,deflines->angle));
+  //   Napi::Array pt0 = Napi::Array::New(env, 2);
+  //   pt0.Set(zero, deflines->pt0.x);
+  //   pt0.Set(1, deflines->pt0.y);
+  //   deflinesObject.Set("pt0", pt0);
+  //   Napi::Array offset = Napi::Array::New(env, 2);
+  //   offset.Set(zero, deflines->offset.x);
+  //   offset.Set(1, deflines->offset.y);
+  //   deflinesObject.Set("offset", offset);
+  //   BITCODE_BD* dashes = deflines->dashes;
+  //   Napi::Array dashesArray = Napi::Array::New(env, 2);
+  //   for(BITCODE_BS j = 0; j < deflines->num_dashes; j++) {
+  //     dashesArray.Set(j, Napi::Number::New(env, *dashes));
+  //     dashes++;
+  //   }
+  //   deflinesObject.Set("dashes", dashesArray);
+  //   deflinesArray.Set(i, deflinesObject);
+  //   deflines++;
+  // }
+  // hatchObj.Set("deflines", deflinesArray);
   
   uint32_t length = hatchArray.Length();
   hatchArray.Set(length, hatchObj);
-  jsonObj.Set("hatch", hatchArray);
+  // jsonObj.Set("hatch", hatchArray);
+  hatch = nullptr;
+  return;
 }
 
 void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -340,7 +344,7 @@ void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array solidArray = checkObject(jsonObj, "solid", env);
-  
+  layer_name = nullptr;
   Napi::Object solidObj = Napi::Object::New(env);
   Napi::Array corner1Array = Napi::Array::New(env, 3);
   corner1Array.Set(zero, Napi::Number::New(env, solid->corner1.x));
@@ -369,7 +373,9 @@ void parseEntitySolid(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
 
   uint32_t length = solidArray.Length();
   solidArray.Set(length, solidObj);
-  jsonObj.Set("solid", solidArray);
+  // jsonObj.Set("solid", solidArray);
+  solid = nullptr;
+  return;
 }
 
 void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -382,7 +388,7 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
   
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array arcArray = checkObject(jsonObj, "arc", env);
-  
+  layer_name = nullptr;
   Napi::Object arcObj = Napi::Object::New(env);
   Napi::Array centerArray = Napi::Array::New(env, 3);
   centerArray.Set(zero, Napi::Number::New(env, arc->center.x));
@@ -395,7 +401,9 @@ void parseEntityARC(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
   arcObj.Set("end_angle", Napi::Number::New(env, arc->end_angle));
   uint32_t length = arcArray.Length();
   arcArray.Set(length, arcObj);
-  jsonObj.Set("arc", arcArray);
+  // jsonObj.Set("arc", arcArray);
+  arc = nullptr;
+  return;
 }
 
 // M텍스트
@@ -407,7 +415,7 @@ void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array mtextArray = checkObject(jsonObj, "mtext", env);
-  
+  layer_name = nullptr;
   Napi::Object mtextObj = Napi::Object::New(env);
   Napi::Array centerArray = Napi::Array::New(env, 3);
   centerArray.Set(zero, Napi::Number::New(env, mtext->ins_pt.x));
@@ -422,11 +430,14 @@ void parseEntityMText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   
   char* text = bit_convert_TU((BITCODE_TU)mtext->text);
   mtextObj.Set("text", Napi::String::New(env, text));
+  text = nullptr;
   mtextObj.Set("size", text_height);
   mtextObj.Set("width", extents_width);
   uint32_t length = mtextArray.Length();
   mtextArray.Set(length, mtextObj);
-  jsonObj.Set("mtext", mtextArray);
+  // jsonObj.Set("mtext", mtextArray);
+  mtext = nullptr;
+  return;
 }
 
 // 텍스트
@@ -439,7 +450,7 @@ void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, boo
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array textArray = checkObject(jsonObj, "text", env);
-  
+  layer_name = nullptr;
   Napi::Object textObj = Napi::Object::New(env);
   Napi::Array centerArray = Napi::Array::New(env, 3);
   centerArray.Set(zero, Napi::Number::New(env, text->ins_pt.x));
@@ -454,9 +465,12 @@ void parseEntityText(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, boo
   textObj.Set("size", height);
   char* strText = EntityTextGetText(text);
   textObj.Set("text", Napi::String::New(env, strText));
+  strText = nullptr;
   uint32_t length = textArray.Length();
   textArray.Set(length, textObj);
-  jsonObj.Set("text", textArray);
+  // jsonObj.Set("text", textArray);
+  text = nullptr;
+  return;
 }
 
 // 곡선
@@ -469,7 +483,7 @@ void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array splineArray = checkObject(jsonObj, "spline", env);
-  
+  layer_name = nullptr;
   Napi::Object splineObj = Napi::Object::New(env);
   Napi::Array points = Napi::Array::New(env);
   BITCODE_3DPOINT* fit_pts = spline->fit_pts;
@@ -481,11 +495,14 @@ void parseEntitySpline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
     points.Set(i, point);
     fit_pts++; // 포인터를 다음 요소로 이동
   }
+  fit_pts = nullptr;
 
   splineObj.Set("points", points);
   uint32_t length = splineArray.Length();
   splineArray.Set(length, splineObj);
-  jsonObj.Set("spline", splineArray);
+  // jsonObj.Set("spline", splineArray);
+  spline = nullptr;
+  return;
 }
 
 // X선
@@ -497,7 +514,7 @@ void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array xlineArray = checkObject(jsonObj, "xline", env);
-  
+  layer_name = nullptr;
   Napi::Object xlineObj = Napi::Object::New(env);
   Napi::Array point = Napi::Array::New(env);
   Napi::Array vector = Napi::Array::New(env);
@@ -511,7 +528,9 @@ void parseEntityXline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   xlineObj.Set("vector", vector);
   uint32_t length = xlineArray.Length();
   xlineArray.Set(length, xlineObj);
-  jsonObj.Set("xline", xlineArray);
+  // jsonObj.Set("xline", xlineArray);
+  xline = nullptr;
+  return;
 }
 
 // 광선
@@ -525,7 +544,7 @@ void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array rayArray = checkObject(jsonObj, "ray", env);
-  
+  layer_name = nullptr;
   Napi::Object rayObj = Napi::Object::New(env);
   Napi::Array point = Napi::Array::New(env);
   Napi::Array vector = Napi::Array::New(env);
@@ -540,7 +559,9 @@ void parseEntityRay(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
   rayObj.Set("vector", vector);
   uint32_t length = rayArray.Length();
   rayArray.Set(length, rayObj);
-  jsonObj.Set("ray", rayArray);
+  // jsonObj.Set("ray", rayArray);
+  ray = nullptr;
+  return;
 }
 
 //점
@@ -554,7 +575,7 @@ void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
   Napi::Array pointArray = checkObject(jsonObj, "point", env);
-  
+  layer_name = nullptr;
   Napi::Object pointObj = Napi::Object::New(env);
   Napi::Array pointArr = Napi::Array::New(env);
   pointArr.Set(zero, Napi::Number::New(env, point->x));
@@ -564,7 +585,9 @@ void parseEntityPoint(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bo
   pointObj.Set("point", pointArr);
   uint32_t length = pointArray.Length();
   pointArray.Set(length, pointObj);
-  jsonObj.Set("point", pointArray);
+  // jsonObj.Set("point", pointArray);
+  point = nullptr;
+  return;
 }
 
 void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -575,7 +598,7 @@ void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isC
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
 
   BITCODE_2RD base_pt = block->base_pt;
   Napi::Array blockArray = checkObject(jsonObj, "block", env);
@@ -589,7 +612,9 @@ void parseBlock(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isC
   std::string name = parseChar(block->name);
   blockObject.Set("name", Napi::String::New(env, name));
   blockArray.Set(length, blockObject);
-  jsonObj.Set("block", blockArray);
+  // jsonObj.Set("block", blockArray);
+  block = nullptr;
+  return;
 }
 
 void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -613,11 +638,15 @@ void parseObjectBlockHeader(Dwg_Object* object, Napi::Array jsonArr, Napi::Env e
         parseDWGObject(object, blockHeaderComponent, env, false);
       }else{
       }
+      object = nullptr;
     }
+    entities = nullptr;
   }
 
   blockHeaderObject.Set("component", blockHeaderComponent);
   jsonObj.Set(name, blockHeaderObject);
+  blockHeader = nullptr;
+  return;
 }
 
 void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -629,7 +658,7 @@ void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Napi::Array insertArray = checkObject(jsonObj, "insert", env);
   Napi::Object insertObject = Napi::Object::New(env);
   Napi::Array baseArray = Napi::Array::New(env, 3);
@@ -651,7 +680,9 @@ void parseEntityInsert(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
   insertObject.Set("block_name", block_header_name);
   uint32_t length = insertArray.Length();
   insertArray.Set(length, insertObject);
-  jsonObj.Set("insert", insertArray);
+  // jsonObj.Set("insert", insertArray);
+  insert = nullptr;
+  return;
 }
 
 // 선
@@ -663,7 +694,7 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, boo
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Dwg_Bitcode_3BD start = line->start;
   Dwg_Bitcode_3BD end = line->end;
   Napi::Array lineArray = checkObject(jsonObj, "line", env);
@@ -690,7 +721,9 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, boo
     newLineArray.Set(i, lineArray.Get(i));
   }
   newLineArray.Set(length, lineObj);
-  jsonObj.Set("line", newLineArray);
+  // jsonObj.Set("line", newLineArray);
+  line = nullptr;
+  return;
 }
 
 // 원
@@ -703,7 +736,7 @@ void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Napi::Array circleArray = checkObject(jsonObj, "circle", env);
   
   Napi::Object circleObj = Napi::Object::New(env);
@@ -716,7 +749,9 @@ void parseEntityCircle(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, b
   circleObj.Set("radius", Napi::Number::New(env, circle->radius));
   uint32_t length = circleArray.Length();
   circleArray.Set(length, circleObj);
-  jsonObj.Set("circle", circleArray);
+  // jsonObj.Set("circle", circleArray);
+  circle = nullptr;
+  return;
 }
 
 // 물리선
@@ -729,7 +764,7 @@ void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Napi::Array lwPolylineArray = checkObject(jsonObj,"lwPolyline", env);
   
   Napi::Object pointObj = Napi::Object::New(env);
@@ -744,10 +779,13 @@ void parseEntityLwPolyline(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
     pointArray.Set(i, point);
     points++; // 포인터를 다음 요소로 이동
   }
+  points = nullptr;
   pointObj.Set("point", pointArray);
   uint32_t length = lwPolylineArray.Length();
   lwPolylineArray.Set(length, pointObj);
-  jsonObj.Set("lwPolyline", lwPolylineArray);
+  // jsonObj.Set("lwPolyline", lwPolylineArray);
+  lwPolyline = nullptr;
+  return;
 }
 
 void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -759,7 +797,7 @@ void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Napi::Array polyline2DArray = checkObject(jsonObj, "polyline2D", env);
   Napi::Object polyline2DObject = Napi::Object::New(env);
   Napi::Array polyline2DComponent = Napi::Array::New(env);
@@ -788,7 +826,9 @@ void parseEntityPolyline2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env en
   polyline2DObject.Set("component", polyline2DComponent);
   uint32_t length = polyline2DArray.Length();
   polyline2DArray.Set(length, polyline2DObject);
-  jsonObj.Set("polyline2D", polyline2DArray);
+  // jsonObj.Set("polyline2D", polyline2DArray);
+  polyline2D = nullptr;
+  return;
 }
 
 void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -800,7 +840,7 @@ void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env,
   }
 
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
-
+  layer_name = nullptr;
   Napi::Array vertex2DArray = checkObject(jsonObj, "vertex2D", env);
   Napi::Object vertex2DObject = Napi::Object::New(env);
   BITCODE_3BD point = vertex2D->point;
@@ -811,7 +851,9 @@ void parseEntityVertex2D(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env,
   vertex2DObject.Set("point", pointArray);
   uint32_t length = vertex2DArray.Length();
   vertex2DArray.Set(length, vertex2DObject);
-  jsonObj.Set("vertex2D", vertex2DArray);
+  // jsonObj.Set("vertex2D", vertex2DArray);
+  vertex2D = nullptr;
+  return;
 }
 
 // 타원(?) 파싱
@@ -823,6 +865,7 @@ void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, 
     return;
   }
   Napi::Object jsonObj = checkArray(jsonArr, (std::string)layer_name, env);
+  layer_name = nullptr;
   Napi::Array ellipseArray = checkObject(jsonObj, "ellipse", env);
   Napi::Object ellipseObject = Napi::Object::New(env);
 
@@ -853,24 +896,26 @@ void parseEntityEllipse(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, 
 
   uint32_t length = ellipseArray.Length();
   ellipseArray.Set(length, ellipseObject);
-  jsonObj.Set("ellipse", ellipseArray);
+  // jsonObj.Set("ellipse", ellipseArray);
+  ellipse = nullptr;
+  return;
 }
 
-std::string ExtractDWGData(Dwg_Data dwg, Napi::Array jsonArr, Napi::Env env) {
-  double modelxmin = dwg_model_x_min(&dwg);
-  double modelxmax = dwg_model_x_max(&dwg);
-  double modelymin = dwg_model_y_min(&dwg);
-  double modelymax = dwg_model_y_max(&dwg);
-  double modelzmin = dwg_model_z_min(&dwg);
-  double modelzmax = dwg_model_z_max(&dwg);
+std::string ExtractDWGData(Dwg_Data* dwg, Napi::Array jsonArr, Napi::Env env) {
+  double modelxmin = dwg_model_x_min(dwg);
+  double modelxmax = dwg_model_x_max(dwg);
+  double modelymin = dwg_model_y_min(dwg);
+  double modelymax = dwg_model_y_max(dwg);
+  double modelzmin = dwg_model_z_min(dwg);
+  double modelzmax = dwg_model_z_max(dwg);
   Napi::Object jsonObj = checkArray(jsonArr, "viewPosition", env);
   Napi::Array viewPosition = checkObject(jsonObj,"viewPosition", env);
   
   viewPosition.Set(zero, Napi::Number::New(env, (modelxmax+modelxmin)/2));
   viewPosition.Set(1, Napi::Number::New(env, (modelymax+modelymin)/2));
   viewPosition.Set(2, Napi::Number::New(env, (modelzmax+modelzmin)/2));
-  jsonObj.Set("viewPosition", viewPosition);
-  return std::string(dwg_version_type(dwg.header.from_version));
+  // jsonObj.Set("viewPosition", viewPosition);
+  return std::string(dwg_version_type(dwg->header.from_version));
 }
 
 void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool isCheckLayer) {
@@ -935,14 +980,15 @@ void parseDWGObject(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, bool
 }
 
 std::string CheckObjectRef(Dwg_Data *restrict dwg, Napi::Array jsonArr, Napi::Env env) {
-  std::cout << "DWG dwg->num_object_refs: " << dwg->num_objects << std::endl;
+  // std::cout << "DWG dwg->num_object_refs: " << dwg->num_objects << std::endl;
+  Dwg_Object *object = dwg->object;
   for (BITCODE_BL i = 0; i < dwg->num_objects; i++){
-    Dwg_Object *object = &dwg->object[i];
     if(object != nullptr){
       parseDWGObject(object, jsonArr, env, true);
     }
-    
+    object++;
   }
+  object = nullptr;
   return std::string("check end");
 }
 
@@ -951,6 +997,7 @@ char* EntityLayerName(Dwg_Object* object) {
   char *name;
   Dwg_Object_Entity *ent = object->tio.entity;
   name = dwg_ent_get_layer_name (ent, &error);
+  ent = nullptr;
   if (!error){
     return name;
   }
@@ -1028,8 +1075,10 @@ std::string CheckLayer(Dwg_Data *restrict dwg, Napi::Object jsonObj, Napi::Env e
         layerNames.Set(length, Napi::String::New(env, name));
         free(name);
       }
+      layer = nullptr;
     }
-  jsonObj.Set("layerNames", layerNames);
+  layer_objects = nullptr;
+  // jsonObj.Set("layerNames", layerNames);
   return std::string("check end");
 }
 
@@ -1070,14 +1119,15 @@ Napi::Value ParseDWG(const Napi::CallbackInfo& info) {
         }
     }
   }
-  Dwg_Data dwg;
-  dwg.opts = 0;
+  Dwg_Data* dwg = new Dwg_Data();
+  // dwg.opts = 0;
   printf("setData \n");
-  dwg_read_file(filePath.c_str(), &dwg);
-  CheckObjectRef(&dwg, jsonObj, env);
+  dwg_read_file(filePath.c_str(), dwg);
+  CheckObjectRef(dwg, jsonObj, env);
   ExtractDWGData(dwg, jsonObj, env);
-  dwg_free(&dwg);
+  dwg_free(dwg);
   clearCharArray();
+  dwg = nullptr;
   return jsonObj;
 }
 
@@ -1089,11 +1139,12 @@ Napi::Value ParseLayer(const Napi::CallbackInfo& info) {
   }
   Napi::Object jsonObj = Napi::Object::New(env);
   std::string filePath = info[0].As<Napi::String>().Utf8Value();
-  Dwg_Data dwg;
-  dwg.opts = 0;
-  dwg_read_file(filePath.c_str(), &dwg);
-  CheckLayer(&dwg, jsonObj, env);
-  dwg_free(&dwg);
+  Dwg_Data* dwg = new Dwg_Data();
+  // dwg.opts = 0;
+  dwg_read_file(filePath.c_str(), dwg);
+  CheckLayer(dwg, jsonObj, env);
+  dwg_free(dwg);
+  dwg = nullptr;
   return jsonObj;
 }
 
