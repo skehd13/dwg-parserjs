@@ -715,13 +715,7 @@ void parseEntityLine(Dwg_Object* object, Napi::Array jsonArr, Napi::Env env, boo
   lineObj.Set("start", startArray);
   lineObj.Set("end", endArray);
   uint32_t length = lineArray.Length();
-
-  Napi::Array newLineArray = Napi::Array::New(env, length + 1);
-  for (uint32_t i = 0; i < length; ++i) {
-    newLineArray.Set(i, lineArray.Get(i));
-  }
-  newLineArray.Set(length, lineObj);
-  // jsonObj.Set("line", newLineArray);
+  lineArray.Set(length, lineObj);
   line = nullptr;
   return;
 }
